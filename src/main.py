@@ -3,7 +3,7 @@ from app import App
 
 def main():
     pg.init()
-    window = App()
-    window.mainLoop()
+    app = App()
+    app.mainLoop()
 
 main()
