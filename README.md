@@ -8,7 +8,7 @@
 2. **Pipx letöltése:**\
     A következő parancsot írd be a Windows parancssorba:
     ```cmd
-    py -m pip install --user pipx
+    python -m pip install --user pipx
     ```
 
     Valószínű, hogy a folyamat egy figyelmeztetéssel fog végződni, ami hasonlóan néz ki, mint ez:
@@ -22,7 +22,7 @@
     ```
 
 3. **Poetry telepítése:**\
-    Futtasd a következő parancsot:
+    Nyiss meg egy új terminált és futtasd a következő parancsot:
     ```cmd
     pipx install poetry
     ```
