@@ -1,8 +1,9 @@
 from datetime import date
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import moderngl as gl
+import pygame as pg
 
 from mesh import Mesh
 from random import random
@@ -21,8 +22,17 @@ class Building:
     constructionDate: date
     usableArea: float
 
-    def __post_init__(self):
-        self.mesh = Mesh(self.glContext, "res\\models\\house.obj", "shaders\\vertexShader.glsl", "shaders\\fragmentShader.glsl", (random()*50, 0.0, random()*50))
+    position: pg.Vector3
+    rotation: pg.Vector3
 
-    def draw(self):
-        self.mesh.draw()
+class BuildingRenderer:
+    def __init__(self):
+        self.mesh = Mesh("res\\models\\house.obj", "shaders\\vertexShader.glsl", "shaders\\fragmentShader.glsl")
+    
+    def draw(self, buildings: list[Building]):
+        if len(buildings) == 0:
+            return
+
+        instancePositions = [building.position for building in buildings]
+        instanceRotations = [building.rotation for building in buildings]
+        self.mesh.drawInstanced(instancePositions, instanceRotations)
