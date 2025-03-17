@@ -1,28 +1,38 @@
 # DynamicDynamiteCitySim
 
-## How to set up environment:
+## Környezet beállítása:
 
-1. **Download python** (version 3.9+):\
-    Make sure to check "Add to PATH" in the installer
+1. **Python letöltése** (3.9-es vagy újabb verzió):\
+    Győződj meg róla, hogy a telepítőben bejelölöd az "Add to PATH" (Hozzáadás a PATH-hoz) lehetőséget.
 
-2. **Download pipx:**\
-    Enter the following command in windows command prompt:
-        `py -m pip install --user pipx`
+2. **Pipx letöltése:**\
+    A következő parancsot írd be a Windows parancssorba:
+    ```cmd
+    py -m pip install --user pipx
+    ```
 
-    It is possible (even most likely) the above finishes with a WARNING looking similar to this:\
-        `> WARNING: The script pipx.exe is installed in <USER folder>\AppData\Roaming\Python\Python3x\Scripts which is not on PATH`
+    Valószínű, hogy a folyamat egy figyelmeztetéssel fog végződni, ami hasonlóan néz ki, mint ez:
+    ```cmd
+    `> WARNING: The script pipx.exe is installed in <USER folder>\AppData\Roaming\Python\Python3x\Scripts which is not on PATH`
+    ```
 
-    If so, navigate to the mentioned folder, allowing you to run the pipx executable directly. Enter the following line (even if you did not get the warning):\
-        `.\pipx.exe ensurepath`
-    
-3. **Install poetry:**\
-    Run the following command:
-        `pipx install poetry`
+    Ha ez történik, navigálj az említett mappába, hogy közvetlenül futtatni tudd a pipx végrehajtható fájlt. Írd be a következő parancsot (akkor is, ha nem kaptál figyelmeztetést):
+    ```cmd
+    .\pipx.exe ensurepath
+    ```
 
-4. I**nstall all dependencies:**\
-    Navigate to the project directory and install all dependencies by running:
-        `poetry install`
+3. **Poetry telepítése:**\
+    Futtasd a következő parancsot:
+    ```cmd
+    pipx install poetry
+    ```
 
-## How to run the program:
+4. **Összes függőség telepítése:**\
+    Navigálj a projekt könyvtárába, és telepítsd az összes függőséget a következő parancs futtatásával:
+    ```cmd
+    poetry install
+    ```
 
-Start the program by running the ***"start.bat"*** batch file.
+## A program futtatása:
+
+Indítsd el a programot a ***"main.py"*** python fájl futtatásával.
