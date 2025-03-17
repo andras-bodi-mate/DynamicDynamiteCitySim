@@ -13,7 +13,7 @@
 
     Valószínű, hogy a folyamat egy figyelmeztetéssel fog végződni, ami hasonlóan néz ki, mint ez:
     ```cmd
-    > FIGYELMEZTETÉS: A pipx.exe szkript a <USER mappa>\AppData\Roaming\Python\Python3x\Scripts mappában található, amely nincs a PATH-on
+    `> WARNING: The script pipx.exe is installed in <USER folder>\AppData\Roaming\Python\Python3x\Scripts which is not on PATH`
     ```
 
     Ha ez történik, navigálj az említett mappába, hogy közvetlenül futtatni tudd a pipx végrehajtható fájlt. Írd be a következő parancsot (akkor is, ha nem kaptál figyelmeztetést):
