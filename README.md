@@ -35,4 +35,4 @@
 
 ## A program futtatása:
 
-Indítsd el a programot a ***"start.bat"*** batch fájl futtatásával.
+Indítsd el a programot a ***"main.py"*** python fájl futtatásával.
