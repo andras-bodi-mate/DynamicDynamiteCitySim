@@ -1,9 +1,10 @@
 import numpy as np
 import pyglm.glm as glm
 
-from dataclasses import dataclass, field
-from random import seed, random, randint, choice
-from math import floor, ceil
+from intersection import IntersectionType
+
+from dataclasses import dataclass
+from random import seed, randint
 from enum import Enum
 from time import sleep
 
@@ -54,7 +55,10 @@ class Lot:
         for yi in range(len(self.rows)-1):
             for xi in range(len(self.columns)-1):
                 newLot = Lot(glm.ivec2(self.columns[xi], self.rows[yi]),
-                                        glm.ivec2(self.columns[xi + 1], self.rows[yi + 1]), self.level - 1)
+                                        glm.ivec2(self.columns[xi + 1], self.rows[yi + 1]),
+                                        self.level - 1,
+                                        self.minDistance,
+                                        self.maxDistance)
                 newLot.generate(streets)
                 self.subLots.append(newLot)
 
@@ -69,49 +73,46 @@ class Street:
 class StreetSegment:
     pos: glm.ivec2
     isHorizontal: bool
-    isVisible: bool = False
 
 @dataclass
-class House:
+class Building:
     pos: glm.ivec2
     direction: glm.ivec2
-    isHidden: bool = True
-
-class IntersectionType(Enum):
-    Three = 0
-    Four = 1
 
 @dataclass
 class Intersection:
     pos: glm.ivec2
     type: IntersectionType
     direction: glm.ivec2 = glm.ivec2(0, 0)
-    isVisible: bool = False
 
 
 class CellType(Enum):
     Empty = 0
     Street = 1
     Intersection = 2
-    House = 3
+    Building = 3
 
 class CityGenerator:
-    def __init__(self, streetMinDistance = 2):
+    def __init__(self, numBuildings, streetMinDistance = 5, streetMaxDistance = 7):
+        self.numBuildings = numBuildings
         self.streetMinDistance = streetMinDistance
+        self.streetMaxDistance = streetMaxDistance
 
-        self.mainLot = Lot(glm.ivec2(-25, -25), glm.ivec2(25, 25), 1)
-        self.houses: list[House] = []
+        self.mainLot = Lot(glm.ivec2(-25, -25), glm.ivec2(25, 25), 1, self.streetMinDistance, self.streetMaxDistance)
+        self.buildings: list[Building] = []
         self.streets: list[Street] = []
         self.streetSegments: list[StreetSegment] = []
         self.intersections: list[Intersection] = []
 
+        self.prevMaxDist = 0.0
+
     def generateStreets(self):
         self.mainLot.generate(self.streets)
 
-    def distanceSqared(self, position: glm.ivec2):
+    def distanceSquared(self, position: glm.ivec2):
         return position.x**2 + position.y**2
     
-    def generateHouses(self):
+    def generateBuildings(self):
         cells = {}
         streetDirections = {}
         for street in self.streets:
@@ -167,38 +168,60 @@ class CityGenerator:
                 p1, p2 = middle + perpendicular, middle - perpendicular
 
                 if shape & 1 and not (p1 in cells and cells[p1] != CellType.Empty):
-                    self.houses.append(House(p1, -perpendicular))
-                    cells[p1] = CellType.House
+                    self.buildings.append(Building(p1, -perpendicular))
+                    cells[p1] = CellType.Building
 
                 if shape & 2 and not (p2 in cells and cells[p2] != CellType.Empty):
-                    self.houses.append(House(middle - perpendicular, perpendicular))
-                    cells[p2] = CellType.House
+                    self.buildings.append(Building(middle - perpendicular, perpendicular))
+                    cells[p2] = CellType.Building
 
-        self.houses.sort(key = lambda house: self.distanceSqared(house.pos))
-        self.streetSegments.sort(key = lambda street: self.distanceSqared(street.pos))
-        self.intersections.sort(key = lambda intersection: self.distanceSqared(intersection.pos))
+        self.buildings.sort(key = lambda building: self.distanceSquared(building.pos))
+        self.streetSegments.sort(key = lambda street: self.distanceSquared(street.pos))
+        self.intersections.sort(key = lambda intersection: self.distanceSquared(intersection.pos))
 
     def generate(self):
         self.generateStreets()
-        self.generateHouses()
+        self.generateBuildings()
 
+    def constructNewBuilding(self):
+        newBuilding = self.buildings[self.numBuildings]
 
-    def chooseHouses(self, numHouses):
-        for house in self.houses[:numHouses]:
-            house.isHidden = False
+        minDistance = self.prevMaxDist
+        maxDistance = (self.distanceSquared(newBuilding.pos)**0.5 + 2)**2
+        self.numBuildings += 1
+        self.prevMaxDist = maxDistance
 
-        d = self.distanceSqared(self.houses[numHouses - 1].pos)
+        newStreetSegments: list[StreetSegment] = []
+        newIntersections: list[Intersection] = []
+
         for streetSegment in self.streetSegments:
-            distance = self.distanceSqared(streetSegment.pos)
+            dist = self.distanceSquared(streetSegment.pos)
+            if dist >= minDistance and dist < maxDistance:
+                newStreetSegments.append(streetSegment)
+        
+        for intersection in self.intersections:
+            dist = self.distanceSquared(intersection.pos)
+            if dist >= minDistance and dist < maxDistance:
+                newIntersections.append(intersection)
+
+        return (newBuilding, newStreetSegments, newIntersections)
+
+        """if numBuildings == 0:
+            d = 0
+        else:
+            d = self.distanceSquared(self.buildings[numBuildings - 1].pos)
+
+        for streetSegment in self.streetSegments:
+            distance = self.distanceSquared(streetSegment.pos)
             if distance > d + 20:
                 break
             streetSegment.isVisible = True
 
         for intersection in self.intersections:
-            distance = self.distanceSqared(intersection.pos)
+            distance = self.distanceSquared(intersection.pos)
             if distance > d + 20:
                 break
-            intersection.isVisible = True
+            intersection.isVisible = True"""
 
     def collectStreets(self, streets: list, lot):
         streets.extend(lot.streets)
@@ -206,7 +229,13 @@ class CityGenerator:
             self.collectStreets(streets, subLot)
         return streets
 
-    def draw(self):
+    def getStreetPositions(self):
+        return [streetSegments.pos for streetSegments in self.streetSegments if streetSegments.isVisible]
+    
+    def getStreetRotations(self):
+        return [0 if streetSegments.isHorizontal else 90 for streetSegments in self.streetSegments if streetSegments.isVisible]
+
+    def draw(self, buildings, streetSegments, intersections):
         minX = min([min(street.startPos.x, street.endPos.x) for street in self.streets])
         maxX = max([max(street.startPos.x, street.endPos.x) for street in self.streets])
         minY = min([min(street.startPos.y, street.endPos.y) for street in self.streets])
@@ -222,21 +251,16 @@ class CityGenerator:
 
         print(len(self.streets))
 
-        for streetSegment in self.streetSegments:
-            if streetSegment.isVisible:
-                if streetSegment.isHorizontal:    
-                    setTile(streetSegment.pos, '═')
-                else:
-                    setTile(streetSegment.pos, '‖')
+        for streetSegment in streetSegments:
+            if streetSegment.isHorizontal:    
+                setTile(streetSegment.pos, '═')
+            else:
+                setTile(streetSegment.pos, '‖')
         
-        for house in self.houses:
-            if not house.isHidden:
-                setTile(house.pos, '■')
+        for building in buildings:
+            setTile(building.pos, '■')
 
-        for intersection in self.intersections:
-            if not intersection.isVisible:
-                continue
-
+        for intersection in intersections:
             if intersection.type == IntersectionType.Four:
                 setTile(intersection.pos, '╬')
                 continue
@@ -255,13 +279,18 @@ class CityGenerator:
         for y in reversed(range(size[1])):
             print(' '.join(self.tiles[y]))
 
-seed(0)
-cityGenerator = CityGenerator()
-cityGenerator.generate()
+seed(1)
 
-numHouses = 1
-while True:
-    cityGenerator.chooseHouses(numHouses)
-    cityGenerator.draw()
-    sleep(1)
-    numHouses += 1
+"""cityGenerator = CityGenerator(0)
+cityGenerator.generate()
+buildings = []
+streetSegments = []
+intersections = []
+
+for i in range(100):
+    newBuilding, newStreetSegments, newIntersections = cityGenerator.constructNewBuilding()
+    buildings.append(newBuilding)
+    streetSegments.extend(newStreetSegments)
+    intersections.extend(newIntersections)
+    cityGenerator.draw(buildings, streetSegments, intersections)
+    sleep(1)"""

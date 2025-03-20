@@ -69,6 +69,7 @@ class App:
     def draw(self):
         self.camera.calculateViewMatrix()
         self.camera.updateUniforms(self.scene.city.buildingRenderer.mesh.shaderProgram)
+        self.camera.updateUniforms(self.scene.city.streetRenderer.mesh.shaderProgram)
         self.window.glContext.clear()
         self.window.glContext.enable(self.window.glContext.DEPTH_TEST)
         self.scene.draw()

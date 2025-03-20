@@ -6,7 +6,6 @@ import moderngl as gl
 import pygame as pg
 
 from mesh import Mesh
-from random import random
 
 class BuildingType(Enum):
     Residential = 0
@@ -15,7 +14,6 @@ class BuildingType(Enum):
 
 @dataclass
 class Building:
-    glContext: gl.Context
     id: int
     name: str
     type: BuildingType
@@ -24,6 +22,9 @@ class Building:
 
     position: pg.Vector3
     rotation: pg.Vector3
+
+    def __post_init__(self):
+        self.glContext = gl.get_context()
 
 class BuildingRenderer:
     def __init__(self):
