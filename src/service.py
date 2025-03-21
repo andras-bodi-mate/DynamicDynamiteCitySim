@@ -10,4 +10,4 @@ class Service:
     id: int
     name: str
     type: ServiceType
-    building: int
+    affectedBuildings: list[int]

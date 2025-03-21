@@ -1,9 +1,10 @@
 import pygame as pg
 
-from building import Building, BuildingType, BuildingRenderer, date
+from building import Building, BuildingType, BuildingData, BuildingRenderer, date
 from street import Street, StreetRenderer
 from intersection import Intersection
 from cityGenerator import CityGenerator
+from importer import Importer
 
 class City:
     def __init__(self, glContext):
@@ -13,6 +14,7 @@ class City:
         self.intersections: list[Intersection] = []
 
         self.cityGenerator = CityGenerator(0)
+        self.importer = Importer()
         self.streetRenderer = StreetRenderer()
         self.buildingRenderer = BuildingRenderer()
 
@@ -24,7 +26,8 @@ class City:
         buildingPosition = pg.Vector3(10 * newBuilding.pos.x, 0, 10 * newBuilding.pos.y)
 
         rotation = pg.Vector3(0, 0, 0)
-        self.buildings.append(Building(0, "building", BuildingType.Residential, date.today(), 750, buildingPosition, rotation))
+        buildingData = BuildingData(0, "building", BuildingType.Residential, date.today(), 750)
+        self.buildings.append(Building(buildingData, buildingPosition, rotation))
 
         for street in newStreetSegments:
             position = pg.Vector3(10 * street.pos.x, 0, 10 * street.pos.y)
@@ -32,7 +35,7 @@ class City:
             self.streets.append(Street(position, pg.Vector3(0, rotation, 0)))
         
         for intersection in newIntersections:
-            position = pg.Vector3(intersection.pos.x*10, 0, intersection.pos.y*100)
+            position = pg.Vector3(intersection.pos.x*10, 0, intersection.pos.y*10)
             if intersection.direction.y == 0:
                 if intersection.direction.x > 0:
                     rotation = 270

@@ -10,21 +10,26 @@ from mesh import Mesh
 class BuildingType(Enum):
     Residential = 0
     School = 1
-    HealthService = 2
+    FireDepartment = 2
+    Police = 3
+    Hospital = 4
+    Office = 5
+    CommunityCenter = 6
 
 @dataclass
-class Building:
+class BuildingData:
     id: int
     name: str
     type: BuildingType
     constructionDate: date
     usableArea: float
 
+@dataclass
+class Building:
+    data: BuildingData
+
     position: pg.Vector3
     rotation: pg.Vector3
-
-    def __post_init__(self):
-        self.glContext = gl.get_context()
 
 class BuildingRenderer:
     def __init__(self):

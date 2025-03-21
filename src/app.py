@@ -51,16 +51,23 @@ class App:
             case pg.K_p:
                 self.scene.city.constructBuilding()
 
+            case pg.K_o:
+                self.scene.city.importer.openAndImportFiles()
+
     def handleEvents(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.close()
+
             if event.type == pg.KEYDOWN:
                 self.handleKeyPressEvents(event.key, event.mod)
+
             if event.type == pg.MOUSEMOTION:
                 self.handleMouseMotionEvents(event.buttons, event.pos, event.rel)
+
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.handleMouseDownEvents(event.button, event.pos)
+
             if event.type == pg.MOUSEBUTTONUP:
                 self.handleMouseUpEvents(event.button, event.pos)
 

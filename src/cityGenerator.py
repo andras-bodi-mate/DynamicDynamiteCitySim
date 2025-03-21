@@ -206,23 +206,6 @@ class CityGenerator:
 
         return (newBuilding, newStreetSegments, newIntersections)
 
-        """if numBuildings == 0:
-            d = 0
-        else:
-            d = self.distanceSquared(self.buildings[numBuildings - 1].pos)
-
-        for streetSegment in self.streetSegments:
-            distance = self.distanceSquared(streetSegment.pos)
-            if distance > d + 20:
-                break
-            streetSegment.isVisible = True
-
-        for intersection in self.intersections:
-            distance = self.distanceSquared(intersection.pos)
-            if distance > d + 20:
-                break
-            intersection.isVisible = True"""
-
     def collectStreets(self, streets: list, lot):
         streets.extend(lot.streets)
         for subLot in lot.subLots:
@@ -280,17 +263,3 @@ class CityGenerator:
             print(' '.join(self.tiles[y]))
 
 seed(1)
-
-"""cityGenerator = CityGenerator(0)
-cityGenerator.generate()
-buildings = []
-streetSegments = []
-intersections = []
-
-for i in range(100):
-    newBuilding, newStreetSegments, newIntersections = cityGenerator.constructNewBuilding()
-    buildings.append(newBuilding)
-    streetSegments.extend(newStreetSegments)
-    intersections.extend(newIntersections)
-    cityGenerator.draw(buildings, streetSegments, intersections)
-    sleep(1)"""
