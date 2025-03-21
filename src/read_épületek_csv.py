@@ -24,7 +24,7 @@ class ReadBuilding:
     usableArea: float
     
 def read_dir():
-    postypes=["Lakóház","Iskola", "Tűzoltóság","Rendőrség","Kórház","Iroda","Park","Művelődésiház"]
+    postypes=["lakóház","iskola", "tűzoltóság","rendőrség","kórház","iroda","park","művelődésiház"]
     buildings=[]
     source=input("Adja meg az épületek.csv fájl elérési útját!")    
     with open(source, mode='r', newline='') as file:
@@ -34,7 +34,7 @@ def read_dir():
             row[3]=int(float(row[3]))
             
             try:
-                row[2]=(postypes.index(row[2])+1)
+                row[2]=(postypes.index(row[2].lower())+1)
             except:
                 row[2]=9
             
