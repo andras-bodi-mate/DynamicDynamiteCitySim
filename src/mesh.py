@@ -30,13 +30,25 @@ class Mesh:
         self.numMaterials = obj.numMaterials
         self.subMeshes = [SubMesh(obj.vertexDataPerMaterial[materialIndex], obj.facesPerMaterial[materialIndex], self.shaderProgram) for materialIndex in range(obj.numMaterials)]
 
+        self.vaos = []
+        self.numInstances = 0
+
     def draw(self):
         for subMesh in self.subMeshes:
             subMesh.draw()
 
-    def drawInstanced(self, instancePositions, instanceRotations):
+    def drawInstances(self):
+        if self.vaos == None:
+            return
+        
+        for vao in self.vaos:
+            vao.render(instances = self.numInstances)
+
+    def updateInstances(self, instancePositions, instanceRotations):
+        print(len(instancePositions))
+
         instanceTransforms = []
-        for pos, rot in zip(instancePositions, instanceRotations):
+        for rot in instanceRotations:
             transform = glm.mat4(1.0)
 
             transform = glm.rotate(transform, glm.radians(rot[2]), glm.vec3(0, 0, 1))
@@ -51,6 +63,7 @@ class Mesh:
         transformsVbo = self.glContext.buffer(instanceTransforms.tobytes())
         translationsVbo = self.glContext.buffer(instancePositions.tobytes())
 
+        self.vaos.clear()
         for subMesh in self.subMeshes:
             vao = self.glContext.vertex_array(self.shaderProgram, [
                 (subMesh.vbo, '3f 2f', 'in_vertex', 'in_texcoord'),
@@ -58,4 +71,6 @@ class Mesh:
                 (translationsVbo, "3f/i", "in_instanceTranslation")
             ], index_buffer=subMesh.ebo)
 
-            vao.render(instances = len(instancePositions))
+            self.vaos.append(vao)
+
+        self.numInstances = len(instancePositions)

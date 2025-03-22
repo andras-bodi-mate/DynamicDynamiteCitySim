@@ -52,11 +52,14 @@ class City:
                     rotation = 180
             self.intersections.append(Intersection(position, intersection.type, pg.Vector3(0, rotation, 0)))
 
+        self.buildingRenderer.updateInstances(self.buildings)
+        self.streetRenderer.updateInstances(self.streets)
+
     def importFilesAndConstruct(self):
         self.importer.openAndImportFiles()
         for buildingData in self.importer.buildingData:
             self.constructBuilding(buildingData)
 
     def draw(self):
-        self.streetRenderer.draw(self.streets)
-        self.buildingRenderer.draw(self.buildings)
+        self.streetRenderer.draw()
+        self.buildingRenderer.draw()

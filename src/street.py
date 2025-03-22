@@ -11,10 +11,13 @@ class StreetRenderer:
     def __init__(self):
         self.mesh = Mesh("res\\models\\street.obj", "shaders\\vertexShader.glsl", "shaders\\fragmentShader.glsl")
     
-    def draw(self, streets: list[Street]):
+    def updateInstances(self, streets: list[Street]):
         if len(streets) == 0:
             return
 
-        instancePositions = [building.position for building in streets]
-        instanceRotations = [building.rotation for building in streets]
-        self.mesh.drawInstanced(instancePositions, instanceRotations)
+        instancePositions = [street.position for street in streets]
+        instanceRotations = [street.rotation for street in streets]
+        self.mesh.updateInstances(instancePositions, instanceRotations)
+
+    def draw(self):
+        self.mesh.drawInstances()

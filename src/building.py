@@ -35,10 +35,13 @@ class BuildingRenderer:
     def __init__(self):
         self.mesh = Mesh("res\\models\\house.obj", "shaders\\vertexShader.glsl", "shaders\\fragmentShader.glsl")
     
-    def draw(self, buildings: list[Building]):
+    def updateInstances(self, buildings: list[Building]):
         if len(buildings) == 0:
             return
 
         instancePositions = [building.position for building in buildings]
         instanceRotations = [building.rotation for building in buildings]
-        self.mesh.drawInstanced(instancePositions, instanceRotations)
+        self.mesh.updateInstances(instancePositions, instanceRotations)
+
+    def draw(self):
+        self.mesh.drawInstances()
