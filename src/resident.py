@@ -5,8 +5,12 @@ from datetime import date
 class Occupation(Enum):
     No = 0
     Student = 1
-    Worker = 2
-    Retired = 3
+    Doctor = 2
+    Officer = 3
+    OfficeWorker = 4
+    Teacher = 5
+    FireFighter = 6
+    Retired = 7
 
 @dataclass
 class Resident:

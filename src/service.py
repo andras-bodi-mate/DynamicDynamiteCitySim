@@ -3,7 +3,8 @@ from enum import Enum
 
 class ServiceType(Enum):
     HealthCare = 0
-    Transportation = 1
+    Education = 1
+    FireDepartment = 2
 
 @dataclass
 class Service:

@@ -52,7 +52,7 @@ class App:
                 self.scene.city.constructBuilding()
 
             case pg.K_o:
-                self.scene.city.importer.openAndImportFiles()
+                self.scene.city.importFilesAndConstruct()
 
     def handleEvents(self):
         for event in pg.event.get():

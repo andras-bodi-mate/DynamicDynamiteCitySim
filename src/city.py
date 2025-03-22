@@ -1,5 +1,7 @@
 import pygame as pg
 
+from random import choice
+
 from building import Building, BuildingType, BuildingData, BuildingRenderer, date
 from street import Street, StreetRenderer
 from intersection import Intersection
@@ -21,12 +23,14 @@ class City:
         self.cityGenerator.generate()
         self.numBuildings = 0
 
-    def constructBuilding(self):
+    def constructBuilding(self, buildingData = None):
         newBuilding, newStreetSegments, newIntersections = self.cityGenerator.constructNewBuilding()
         buildingPosition = pg.Vector3(10 * newBuilding.pos.x, 0, 10 * newBuilding.pos.y)
 
         rotation = pg.Vector3(0, 0, 0)
-        buildingData = BuildingData(0, "building", BuildingType.Residential, date.today(), 750)
+        if buildingData == None:
+            buildingData = BuildingData(0, "building", BuildingType.Residential, date.today(), 750)
+
         self.buildings.append(Building(buildingData, buildingPosition, rotation))
 
         for street in newStreetSegments:
@@ -47,6 +51,11 @@ class City:
                 else:
                     rotation = 180
             self.intersections.append(Intersection(position, intersection.type, pg.Vector3(0, rotation, 0)))
+
+    def importFilesAndConstruct(self):
+        self.importer.openAndImportFiles()
+        for buildingData in self.importer.buildingData:
+            self.constructBuilding(buildingData)
 
     def draw(self):
         self.streetRenderer.draw(self.streets)

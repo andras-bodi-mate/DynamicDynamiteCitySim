@@ -4,8 +4,9 @@ import csv
 import tkinter as tk
 import tkinter.filedialog as fd
 
-from datetime import date
+from datetime import datetime
 
+from pathHandler import getPath
 from building import BuildingType, BuildingData
 from resident import Resident, Occupation
 from service import Service, ServiceType
@@ -24,17 +25,25 @@ class Importer:
     occupationTypes = {
         "Nincs": Occupation.No,
         "Tanuló": Occupation.Student,
-        "Dolgozó": Occupation.Worker,
+        "Orvos": Occupation.Doctor,
+        "Rendőr": Occupation.Officer,
+        "Irodai dolgozó": Occupation.OfficeWorker,
+        "Tanár": Occupation.Teacher,
+        "Tűzoltó": Occupation.FireFighter,
         "Nyugdíjas": Occupation.Retired
     }
 
     serviceTypes = {
         "Egészségügy": ServiceType.HealthCare,
-        "Közlekedés": ServiceType.Transportation
+        "Oktatás": ServiceType.Education,
+        "Tűzoltóság": ServiceType.FireDepartment
     }
 
     fileTypes = [("CSV Files", "*.csv"), ("Text Files", "*.txt"), ("All Files", "*.*")]
-    
+    fileDialogTitles = [f"Válassza ki a .csv fájlt ami tartalmazza a(z) {s} adatait." for s in ("épületek", "lakosok", "szolgáltatások")]
+
+    dateTimeFormat = r"%d/%m/%Y %H:%M:%S"
+
     def __init__(self):
         self.buildingData: list[BuildingData] = []
         self.residentData: list[Resident] = []
@@ -48,9 +57,9 @@ class Importer:
     def importBuildings(self, fileName):
         for row in self.extractRowsFromFile(fileName):
             id, name, buildingType, constructionDate, usableArea = row
-            id = int(id)
+            id = int(float(id))
             buildingType = Importer.buildingTypes[buildingType]
-            constructionDate = date.fromisoformat(constructionDate)
+            constructionDate = datetime.strptime(constructionDate, Importer.dateTimeFormat)
             usableArea = float(usableArea)
 
             self.buildingData.append(BuildingData(id, name, buildingType, constructionDate, usableArea))
@@ -58,33 +67,39 @@ class Importer:
     def importResidents(self, fileName):
         for row in self.extractRowsFromFile(fileName):
             id, name, dateOfBirth, occupation, residence = row
-            id = int(id)
-            dateOfBirth = date.fromisoformat(dateOfBirth)
+            id = int(float(id))
+            dateOfBirth = datetime.strptime(dateOfBirth, Importer.dateTimeFormat)
             occupation = Importer.occupationTypes[occupation]
-            residence = int(residence)
+            residence = int(float(residence))
 
             self.buildingData.append(Resident(id, name, dateOfBirth, occupation, residence))
 
     def importServices(self, fileName):
         for row in self.extractRowsFromFile(fileName):
             id, name, serviceType, affectedBuildings = row
-            id = int(id)
+            id = int(float(id))
             serviceType = Importer.serviceTypes[serviceType]
-            affectedBuildings = map(int, affectedBuildings.split(' '))
+            affectedBuildings = map(int, map(float, affectedBuildings.split(' ')))
 
             self.serviceData.append(Service(id, name, serviceType, affectedBuildings))
 
     def openAndImportFiles(self):
-        pg.display.toggle_fullscreen()
+        pg.display.iconify()
 
         root = tk.Tk()
+        root.iconbitmap(getPath("res\\images\\dialogIcon.ico"))
         root.withdraw()
 
-        fileNames = (fd.askopenfilename(filetypes = Importer.fileTypes, defaultextension = ".csv") for _ in range(3))
+        fileNames = []
+        for i in range(3):
+            fileName = fd.askopenfilename(title = Importer.fileDialogTitles[i], filetypes = Importer.fileTypes, defaultextension = ".csv")
+            if fileName != '':
+                fileNames.append(fileName)
+            else:
+                return
+        
         buildingsFileName, residentsFileName, servicesFileName = fileNames
 
-        pg.display.toggle_fullscreen()
-
-        #self.importBuildings(buildingsFileName)
-        #self.importResidents(residentsFileName)
-        #self.importServices(servicesFileName)
+        self.importBuildings(buildingsFileName)
+        self.importResidents(residentsFileName)
+        self.importServices(servicesFileName)
