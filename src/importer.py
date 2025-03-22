@@ -72,7 +72,7 @@ class Importer:
             occupation = Importer.occupationTypes[occupation]
             residence = int(float(residence))
 
-            self.buildingData.append(Resident(id, name, dateOfBirth, occupation, residence))
+            self.buildingData.append(Resident(id, name, dateOfBirth, occupation, residence, 100))
 
     def importServices(self, fileName):
         for row in self.extractRowsFromFile(fileName):
@@ -84,7 +84,7 @@ class Importer:
             self.serviceData.append(Service(id, name, serviceType, affectedBuildings))
 
     def openAndImportFiles(self):
-        pg.display.iconify()
+        #pg.display.iconify()
 
         root = tk.Tk()
         root.iconbitmap(getPath("res\\images\\dialogIcon.ico"))
