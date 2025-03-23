@@ -38,4 +38,4 @@ def recalchappiness():
         for building in buildings:
             if building.id==resident.occupation:
                 hcondition=building.condition      
-        resident.happines=(resident.happines/2)+(max((hcondition/2)-10,0))+min(numofservices,10)
+        resident.happines=int((resident.happines/2)+(max((hcondition/2)-10,0))+min(numofservices,10))
