@@ -19,3 +19,4 @@ class Resident:
     dateOfBirth: date
     occupation: Occupation
     residence: int
+    happines: int
