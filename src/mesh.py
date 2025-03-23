@@ -45,8 +45,6 @@ class Mesh:
             vao.render(instances = self.numInstances)
 
     def updateInstances(self, instancePositions, instanceRotations):
-        print(len(instancePositions))
-
         instanceTransforms = []
         for rot in instanceRotations:
             transform = glm.mat4(1.0)

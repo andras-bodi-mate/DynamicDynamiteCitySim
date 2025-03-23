@@ -58,11 +58,3 @@ class Obj:
                 self.vertexDataPerMaterial[-1].extend((*vertices[vertexIndex], *texCoords[texCoordIndex]))
             self.vertexDataPerMaterial[-1] = np.array(self.vertexDataPerMaterial[-1], dtype = "f4")
             self.facesPerMaterial[materialIndex] = np.array(self.facesPerMaterial[materialIndex], dtype = "i4")
-            
-"""
-obj = Obj(getPath("res\\models\\house.obj"))
-for materialIndex in range(obj.numMaterials):
-    print(f"Material: {obj.materials[materialIndex]}")
-    print(f"vertex data: {obj.vertexDataPerMaterial[materialIndex]}")
-    print(f"Index data: {obj.facesPerMaterial[materialIndex]}")
-"""

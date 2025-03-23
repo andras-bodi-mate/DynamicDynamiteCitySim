@@ -1,24 +1,34 @@
-import pygame as pg
 import moderngl as gl
-from pygame import Vector2 as Vec2
-from pygame import Vector3 as Vec3
+import PyQt6.QtWidgets as qtw
+import PyQt6.QtCore as qtc
+import PyQt6.QtGui as qtg
+import glm
+
+from ui import MainWindow
 
 class Window:
     def __init__(self):
-        displayInfo = pg.display.Info()
-        self.size = Vec2(displayInfo.current_w, displayInfo.current_h)
-        self.surf = pg.display.set_mode(self.size, pg.FULLSCREEN | pg.OPENGL | pg.DOUBLEBUF, vsync=1)
-        self.glContext = gl.get_context()
+        self.qtApp = qtw.QApplication([])
+        self.mainWindow = MainWindow()
+        self.mainWindow.showFullScreen()
+
+        self.qtApp.processEvents()
+        self.mainWindow.viewport.makeCurrent()
+        self.glContext = gl.create_context()
+        self.isOpen = True
+
+        self.glContext.viewport = (0, 0, 1920, 1080)
+
+        self.mainWindow.viewport.glContext = self.glContext
+
+        primaryScreen = self.qtApp.primaryScreen()
+        screenSize = primaryScreen.size()
+        pixelRatio = primaryScreen.devicePixelRatio()
+        self.size = glm.ivec2(screenSize.width() * pixelRatio, screenSize.height() * pixelRatio)
     
     def close(self):
-        pg.display.quit()
+        self.mainWindow.close()
 
-    def screenToWorld(self, p):
-        o = (p - self.size/2)/100
-        return Vec2(o.x, -o.y)
-    
-    def worldToScreen(self, p):
-        return self.size/2 + 100*Vec2(p.x, -p.y)
-    
-    def worldXToScreen(self, x):
-        return 100*x
+    def processEvents(self):
+        self.qtApp.processEvents()
+        self.isOpen = self.mainWindow.isOpen

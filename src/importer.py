@@ -1,5 +1,3 @@
-import pygame as pg
-
 import csv
 import tkinter as tk
 import tkinter.filedialog as fd
@@ -84,8 +82,6 @@ class Importer:
             self.serviceData.append(Service(id, name, serviceType, affectedBuildings))
 
     def openAndImportFiles(self):
-        pg.display.iconify()
-
         root = tk.Tk()
         root.iconbitmap(getPath("res\\images\\dialogIcon.ico"))
         root.withdraw()

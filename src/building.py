@@ -2,8 +2,8 @@ from datetime import date
 from enum import Enum
 from dataclasses import dataclass, field
 
+import glm
 import moderngl as gl
-import pygame as pg
 
 from mesh import Mesh
 
@@ -28,8 +28,8 @@ class BuildingData:
 class Building:
     data: BuildingData
 
-    position: pg.Vector3
-    rotation: pg.Vector3
+    position: glm.vec3
+    rotation: glm.vec3
 
 class BuildingRenderer:
     def __init__(self):

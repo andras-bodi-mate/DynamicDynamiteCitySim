@@ -1,5 +1,3 @@
-import pygame as pg
-
 from mesh import Mesh
 
 class Street:

@@ -232,8 +232,6 @@ class CityGenerator:
 
         self.tiles = np.full((size[1], size[0]), '·', dtype = str)
 
-        print(len(self.streets))
-
         for streetSegment in streetSegments:
             if streetSegment.isHorizontal:    
                 setTile(streetSegment.pos, '═')
