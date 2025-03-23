@@ -23,6 +23,7 @@ class BuildingData:
     type: BuildingType
     constructionDate: date
     usableArea: float
+    condition: int
 
 @dataclass
 class Building:

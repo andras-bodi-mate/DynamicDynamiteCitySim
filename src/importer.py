@@ -62,7 +62,7 @@ class Importer:
             constructionDate = datetime.strptime(constructionDate, Importer.dateTimeFormat)
             usableArea = float(usableArea)
 
-            self.buildingData.append(BuildingData(id, name, buildingType, constructionDate, usableArea))
+            self.buildingData.append(BuildingData(id, name, buildingType, constructionDate, usableArea,100))
 
     def importResidents(self, fileName):
         for row in self.extractRowsFromFile(fileName):

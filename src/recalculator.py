@@ -25,3 +25,17 @@ print("\nList of Services:")
 for service in services:
     print(f"ID: {service.id}, Name: {service.name}, Type: {service.serviceType}, "
           f"Affected Buildings: {list(service.affectedBuildings)}")
+    
+    """
+        boldogság számítása:
+        előző bodogság/2+((házának állapota/2)-10)+(min(szolgáltatások száma,10))
+        (max 50)                  (max 40, min 0)                  (max 10)
+    """
+def recalchappiness():
+    hcondition=0
+    numofservices=len(services)
+    for resident in residents:
+        for building in buildings:
+            if building.id==resident.occupation:
+                hcondition=building.condition      
+        resident.happines=(resident.happines/2)+(max((hcondition/2)-10,0))+min(numofservices,10)
