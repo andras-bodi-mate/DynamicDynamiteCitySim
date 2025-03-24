@@ -21,6 +21,9 @@ class App:
         self.window.mainWindow.loadDatabaseButton.clicked.connect(
             self.scene.city.importFilesAndConstruct
         )
+        self.window.mainWindow.nextMonthButton.clicked.connect(
+            self.scene.city.nextMonth
+        )
         self.window.mainWindow.viewport.eventHandler.mouseMoved.connect(
             self.handleMouseMotionEvents
         )

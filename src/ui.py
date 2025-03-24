@@ -108,12 +108,13 @@ class MainWindow(qtw.QMainWindow):
 
         self.constructBuildingButton = Button("Új épület építése")
         self.loadDatabaseButton = Button("Adatbázis betöltése")
-
+        self.nextMonthButton=Button("Következő hónap")
+        
         bottomPanelLayout = qtw.QHBoxLayout()
         bottomPanelLayout.setSpacing(10)
         bottomPanelLayout.addWidget(self.constructBuildingButton)
         bottomPanelLayout.addWidget(self.loadDatabaseButton)
-        bottomPanelLayout.addWidget(Button("Button3"))
+        bottomPanelLayout.addWidget(self.nextMonthButton)
         bottomPanelLayout.addWidget(Button("Button4"))
         bottomPanelLayout.addWidget(Button("Button5"))
 

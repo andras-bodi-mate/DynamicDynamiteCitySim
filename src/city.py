@@ -1,3 +1,4 @@
+import datetime
 import glm
 
 from building import Building, BuildingType, BuildingData, BuildingRenderer, date
@@ -5,8 +6,13 @@ from street import Street, StreetRenderer
 from intersection import Intersection
 from cityGenerator import CityGenerator
 from importer import Importer
+from recalculator import *
 
 class City:
+    today=datetime.datetime.now()
+    
+    dateyear=today.year
+    datemonth=today.month
     def __init__(self, glContext):
         self.glContext = glContext
         self.buildings: list[Building] = []
@@ -57,7 +63,20 @@ class City:
         self.importer.openAndImportFiles()
         for buildingData in self.importer.buildingData:
             self.constructBuilding(buildingData)
-
+    def nextMonth(self):
+        month=self.datemonth
+        year=self.dateyear
+        if(month==12):
+            month=1
+            year+=1
+        else:
+            month+=1
+        self.datemonth=month
+        self.dateyear=year
+        recalcbuildingcondition()
+        recalchappiness(0)
+        print(year,month)
+    
     def draw(self):
         self.streetRenderer.draw()
         self.buildingRenderer.draw()
