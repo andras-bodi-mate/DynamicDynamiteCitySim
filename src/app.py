@@ -16,10 +16,13 @@ class App:
         self.scene = Scene(self.window)
 
         self.window.mainWindow.constructBuildingButton.clicked.connect(
-            self.scene.city.constructBuilding
+            lambda: self.scene.city.constructBuilding()
         )
         self.window.mainWindow.loadDatabaseButton.clicked.connect(
-            self.scene.city.importFilesAndConstruct
+            lambda: self.scene.city.importFilesAndConstruct()
+        )
+        self.window.mainWindow.nextMonthButton.clicked.connect(
+            lambda: self.updateToNextMonth()
         )
         self.window.mainWindow.viewport.eventHandler.mouseMoved.connect(
             self.handleMouseMotionEvents
@@ -29,6 +32,7 @@ class App:
         self.isRunning = False
 
     def gameTick(self):
+        #self.scene.city.constructBuilding()
         self.scene.gameTick(self.deltaTime)
     
     def processEvents(self):
@@ -63,7 +67,11 @@ class App:
     def handleKeyHoldEvents(self):
         self.camera.processMovementInput(self.deltaTime)
 
+    def updateToNextMonth(self):
+        self.scene.city.updateToNextMonth()
+
     def render(self):
+        self.window.mainWindow.updateDateLabel(str(self.scene.city.date))
         self.camera.calculateViewMatrix()
         self.camera.updateUniforms(self.scene.city.buildingRenderer.mesh.shaderProgram)
         self.camera.updateUniforms(self.scene.city.streetRenderer.mesh.shaderProgram)

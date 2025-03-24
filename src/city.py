@@ -1,10 +1,15 @@
 import glm
 
+from dateutil.relativedelta import relativedelta
+from random import randint
+
 from building import Building, BuildingType, BuildingData, BuildingRenderer, date
 from street import Street, StreetRenderer
 from intersection import Intersection
 from cityGenerator import CityGenerator
 from importer import Importer
+from resident import Resident
+from service import Service
 
 class City:
     def __init__(self, glContext):
@@ -12,11 +17,16 @@ class City:
         self.buildings: list[Building] = []
         self.streets: list[Street] = []
         self.intersections: list[Intersection] = []
+        self.residents: list[Resident] = []
+        self.services: list[Service] = []
 
         self.cityGenerator = CityGenerator(0)
         self.importer = Importer()
         self.streetRenderer = StreetRenderer()
         self.buildingRenderer = BuildingRenderer()
+
+        self.date = date.today()
+        self.tax = 0.5
 
         self.cityGenerator.generate()
         self.numBuildings = 0
@@ -27,7 +37,7 @@ class City:
 
         rotation = glm.vec3(0, 0, 0)
         if buildingData == None:
-            buildingData = BuildingData(0, "building", BuildingType.Residential, date.today(), 750)
+            buildingData = BuildingData(0, "building", BuildingType.Residential, date.today(), 750, 5)
 
         self.buildings.append(Building(buildingData, buildingPosition, rotation))
 
@@ -58,6 +68,33 @@ class City:
         for buildingData in self.importer.buildingData:
             self.constructBuilding(buildingData)
 
+    def updateResidents(self):
+        numServices = len(self.services)
+        for resident in self.residents:
+            for building in self.buildings:
+                if resident.residence == building.data.id:
+                       residenceCondition = building.data.condition
+            
+            newHappiness = int((resident.happiness/2) + (max((residenceCondition/2) - 10, 0)) + min(numServices, 10) + (10 - (self.tax * 10)))
+            resident.updateHappiness(newHappiness)
+    
+    def updateBuildings(self):
+        for building in self.buildings:
+            occupants = sum((True for resident in self.residents if resident.residence == building.id))
+
+            chance = randint(1, 10)
+            buildingNewCondition = building.data.condition - occupants
+
+            if (chance == 1):
+                buildingNewCondition -= 5
+
+            building.updateCondition(buildingNewCondition)
+
+    def updateToNextMonth(self):
+        self.date += relativedelta(months = 1)
+        self.updateBuildings()
+        self.updateResidents()
+    
     def render(self):
         self.streetRenderer.render()
         self.buildingRenderer.render()

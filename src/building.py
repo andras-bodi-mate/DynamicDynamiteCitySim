@@ -32,6 +32,9 @@ class Building:
     position: glm.vec3
     rotation: glm.vec3
 
+    def updateCondition(self, newCondition):
+        self.data.condition = min(max(0, newCondition), 10)
+
 class BuildingRenderer:
     def __init__(self):
         self.mesh = Mesh("res\\models\\house.obj", "shaders\\instanceVertexShader.glsl", "shaders\\fragmentShader.glsl",

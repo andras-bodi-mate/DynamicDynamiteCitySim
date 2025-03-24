@@ -20,3 +20,6 @@ class Resident:
     occupation: Occupation
     residence: int
     happiness: int
+
+    def updateHappiness(self, newHappiness):
+        self.happiness = min(max(0, newHappiness), 100)

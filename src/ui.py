@@ -92,7 +92,6 @@ class Viewport(qtg.QWindow):
 class Button(qtw.QPushButton):
     def __init__(self, text):
         super().__init__(text)
-
         self.setFixedHeight(40)
 
 class MainWindow(qtw.QMainWindow):
@@ -109,17 +108,30 @@ class MainWindow(qtw.QMainWindow):
         self.constructBuildingButton = Button("Új épület építése")
         self.loadDatabaseButton = Button("Adatbázis betöltése")
 
+        self.nextMonthButton = Button("Következő hónap")
+        self.dateLabel = qtw.QLabel()
+        self.dateLabel.setText("")
+        self.dateLabel.setAlignment(qtc.Qt.AlignmentFlag.AlignHCenter)
+        datePanelLayout = qtw.QVBoxLayout()
+        datePanelLayout.setSpacing(5)
+        datePanelLayout.addWidget(self.dateLabel)
+        datePanelLayout.addWidget(self.nextMonthButton)
+
+        datePanel = qtw.QWidget()
+        datePanel.setLayout(datePanelLayout)
+
         bottomPanelLayout = qtw.QHBoxLayout()
         bottomPanelLayout.setSpacing(10)
         bottomPanelLayout.addWidget(self.constructBuildingButton)
         bottomPanelLayout.addWidget(self.loadDatabaseButton)
-        bottomPanelLayout.addWidget(Button("Button3"))
+        bottomPanelLayout.addWidget(datePanel)
         bottomPanelLayout.addWidget(Button("Button4"))
         bottomPanelLayout.addWidget(Button("Button5"))
 
         bottomPanel = qtw.QWidget()
         bottomPanel.setLayout(bottomPanelLayout)
-        bottomPanel.setFixedHeight(60)
+        bottomPanel.setFixedHeight(100)
+
 
         self.viewport = Viewport()
         viewportWidget = qtw.QWidget.createWindowContainer(self.viewport)
@@ -130,3 +142,6 @@ class MainWindow(qtw.QMainWindow):
 
     def closeEvent(self, event):
         self.isOpen = False
+
+    def updateDateLabel(self, text):
+        self.dateLabel.setText(text)
