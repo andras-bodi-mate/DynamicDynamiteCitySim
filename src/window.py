@@ -4,11 +4,15 @@ import PyQt6.QtCore as qtc
 import PyQt6.QtGui as qtg
 import glm
 
+from pathHandler import getPath
 from ui import MainWindow
 
 class Window:
     def __init__(self):
         self.qtApp = qtw.QApplication([])
+        with open(getPath("res\\styles\\darkstyle.qss"), "r") as file:
+            self.qtApp.setStyleSheet(file.read())
+
         self.mainWindow = MainWindow()
         self.mainWindow.showFullScreen()
 
