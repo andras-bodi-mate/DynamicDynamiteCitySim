@@ -47,7 +47,7 @@ class App:
 
             self.processEvents()
             self.gameTick()
-            self.draw()
+            self.render()
         
         self.window.close()
 
@@ -63,11 +63,15 @@ class App:
     def handleKeyHoldEvents(self):
         self.camera.processMovementInput(self.deltaTime)
 
-    def draw(self):
+    def render(self):
         self.camera.calculateViewMatrix()
         self.camera.updateUniforms(self.scene.city.buildingRenderer.mesh.shaderProgram)
         self.camera.updateUniforms(self.scene.city.streetRenderer.mesh.shaderProgram)
+        self.camera.updateUniforms(self.scene.backdrop.shaderProgram)
+        self.camera.updateUniforms(self.scene.horizon.shaderProgram, writeProjection = False)
+        self.scene.horizon.updateUniforms(self.window.size, self.camera.fov)
+
         self.window.glContext.enable(self.window.glContext.DEPTH_TEST)
         self.window.glContext.clear(0.5, 0.7, 0.8)
-        self.scene.draw()
+        self.scene.render()
         self.window.mainWindow.viewport.swapBuffers()

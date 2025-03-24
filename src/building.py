@@ -34,7 +34,17 @@ class Building:
 
 class BuildingRenderer:
     def __init__(self):
-        self.mesh = Mesh("res\\models\\house.obj", "shaders\\vertexShader.glsl", "shaders\\fragmentShader.glsl")
+        self.mesh = Mesh("res\\models\\house.obj", "shaders\\instanceVertexShader.glsl", "shaders\\fragmentShader.glsl",
+                         {"Walnut_Wood": "res\\textures\\Walnut\\walnutBaseColor.jpg",
+                          "Red_Brick": "res\\textures\\BrickWall\\brickWallBaseColor.jpeg",
+                          "Wood": "res\\textures\\Wood\\woodBaseColor.jpg",
+                          "Garage_Door": "res\\textures\\GarageDoor\\garageDoorBaseColor.png",
+                          "Metal_Roof": "res\\textures\\Roof\\roofBaseColor.jpg",
+                          "Gray_Paint": "res\\textures\\GreyPaint\\greyPaintBaseColor.jpg",
+                          "Eggshell_Paint": "res\\textures\\EggshellPaint\\eggshellPaintBaseColor.jpg",
+                          "White_Marble_Tiles": "res\\textures\\WhiteMarble\\whiteMarbleBaseColor.jpg",
+                          "Black_Metal": "res\\textures\\BlackMetal\\blackMetalBaseColor.jpg"
+                          })
     
     def updateInstances(self, buildings: list[Building]):
         if len(buildings) == 0:
@@ -44,5 +54,5 @@ class BuildingRenderer:
         instanceRotations = [building.rotation for building in buildings]
         self.mesh.updateInstances(instancePositions, instanceRotations)
 
-    def draw(self):
-        self.mesh.drawInstances()
+    def render(self):
+        self.mesh.renderInstances()

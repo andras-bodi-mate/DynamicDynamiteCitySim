@@ -7,7 +7,8 @@ class Street:
 
 class StreetRenderer:
     def __init__(self):
-        self.mesh = Mesh("res\\models\\street.obj", "shaders\\vertexShader.glsl", "shaders\\fragmentShader.glsl")
+        self.mesh = Mesh("res\\models\\street.obj", "shaders\\instanceVertexShader.glsl", "shaders\\fragmentShader.glsl",
+                         {"Asphalt": "res\\textures\\Asphalt\\asphaltBaseColor.jpg"})
     
     def updateInstances(self, streets: list[Street]):
         if len(streets) == 0:
@@ -17,5 +18,5 @@ class StreetRenderer:
         instanceRotations = [street.rotation for street in streets]
         self.mesh.updateInstances(instancePositions, instanceRotations)
 
-    def draw(self):
-        self.mesh.drawInstances()
+    def render(self):
+        self.mesh.renderInstances()

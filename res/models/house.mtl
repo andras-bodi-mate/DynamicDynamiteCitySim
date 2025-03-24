@@ -1,0 +1,100 @@
+# Blender 4.3.0 MTL File: 'house.blend'
+# www.blender.org
+
+newmtl Black_Metal
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/BlackMetal/blackMetalBaseColor.jpg
+map_Ns C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/BlackMetal/blackMetalRoughness.jpg
+map_refl C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/BlackMetal/blackMetalMetallic.jpg
+map_Bump -bm 1.000000 C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/BlackMetal/blackMetalNormal.jpg
+
+newmtl Eggshell_Paint
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.431818 0.431818 0.431818
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/EggshellPaint/eggshellPaintBaseColor.jpg
+
+newmtl Garage_Door
+Ns 8.264469
+Ka 0.607273 0.607273 0.607273
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/garageDoor/garageDoorBaseColor.png
+map_refl C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/BlackMetal/blackMetalMetallic.jpg
+map_Bump -bm 1.000000 C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/BlackMetal/blackMetalNormal.jpg
+
+newmtl Gray_Paint
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.431818 0.431818 0.431818
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/GreyPaint/eggshellPaintBaseColor.jpg
+
+newmtl Metal_Roof
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/Roof/roofBaseColor.jpg
+map_Bump -bm 1.000000 C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/Roof/roofNormal.jpg
+
+newmtl Red_Brick
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl Walnut_Wood
+Ns 54.161991
+Ka 1.000000 1.000000 1.000000
+Ks 0.068182 0.068182 0.068182
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/Walnut/walnutBaseColor.jpg
+map_Bump -bm 1.000000 C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/Walnut/walnutNormal.jpg
+
+newmtl White_Marble_Tiles
+Ns 250.000000
+Ka 0.200000 0.200000 0.200000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/WhiteMarble/whiteMarbleBaseColor.jpg
+map_Bump -bm 1.000000 C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/WhiteMarble/whiteMarbleNormal.jpg
+
+newmtl Wood
+Ns 250.000000
+Ka 0.372727 0.372727 0.372727
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/Wood/woodBaseColor.jpg
+map_Bump -bm 1.000000 C:/Users/bodit/Documents/Python Projects/DynamicDynamiteCitySim/res/textures/Wood/woodNormal.jpg

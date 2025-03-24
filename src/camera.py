@@ -3,7 +3,7 @@ import numpy as np
 import keyboard as kb
 
 class Camera:
-    def __init__(self, window, FOV, nearClip = 0.1, farClip = 1000):
+    def __init__(self, window, FOV, nearClip = 0.5, farClip = 1000.0):
         self.window = window
         self.position = glm.vec3(0.0, 0.0, 5.0)  # Start position
         self.front = glm.vec3(0.0, 0.0, -1.0)  # Looking towards -Z
@@ -11,6 +11,7 @@ class Camera:
         self.yaw, self.pitch = -90.0, 0.0  # Camera rotation
         self.sensitivity = 0.06
         self.speed = 7
+        self.fov = FOV
 
         self.projection = glm.perspective(glm.radians(FOV), window.size.x / window.size.y, nearClip, farClip)
         self.processRotationInput(glm.vec2(0.0, 0.0))
@@ -46,7 +47,11 @@ class Camera:
         self.front = glm.normalize(direction)
 
     def calculateViewMatrix(self):
-        self.look = glm.lookAt(self.position, self.position + self.front, (0.0, 1.0, 0.0))
+        self.view = glm.lookAt(self.position, self.position + self.front, (0.0, 1.0, 0.0))
 
-    def updateUniforms(self, shaderProgram):
-        shaderProgram["camera"].write(self.projection * self.look)
+    def updateUniforms(self, shaderProgram, writeProjection = True, writeView = True):
+        if writeProjection:
+            shaderProgram["u_projection"].write(self.projection)
+
+        if writeView:
+            shaderProgram["u_view"].write(self.view)

@@ -32,10 +32,10 @@ for service in services:
         (max 50)                  (max 40, min 0)                  (max 10)
     """
 def recalchappiness():
-    hcondition=0
-    numofservices=len(services)
+    hcondition = 0
+    numofservices = len(services)
     for resident in residents:
         for building in buildings:
-            if building.id==resident.occupation:
-                hcondition=building.condition      
-        resident.happines=int((resident.happines/2)+(max((hcondition/2)-10,0))+min(numofservices,10))
+            if building.id == resident.occupation:
+                hcondition = building.condition      
+        resident.happiness = int((resident.happiness/2) + (max((hcondition/2) - 10, 0)) + min(numofservices, 10))

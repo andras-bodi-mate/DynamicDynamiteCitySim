@@ -58,6 +58,6 @@ class City:
         for buildingData in self.importer.buildingData:
             self.constructBuilding(buildingData)
 
-    def draw(self):
-        self.streetRenderer.draw()
-        self.buildingRenderer.draw()
+    def render(self):
+        self.streetRenderer.render()
+        self.buildingRenderer.render()

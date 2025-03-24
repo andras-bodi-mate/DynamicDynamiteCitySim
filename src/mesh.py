@@ -4,23 +4,32 @@ from pyglm import glm
 
 from pathHandler import getPath
 from shader import loadShaders
+from material import Material
 from obj import Obj
 
 class SubMesh:
-    def __init__(self, vertexData, faceData, shaderProgram):
+    def __init__(self, vertexData, faceData, shaderProgram, baseColorPath):
         self.glContext = gl.get_context()
+        self.shaderProgram = shaderProgram
+
+        self.material = Material(baseColorPath)
 
         self.vbo = self.glContext.buffer(vertexData.tobytes())
         self.ebo = self.glContext.buffer(faceData.tobytes())
         self.vao = self.glContext.vertex_array(shaderProgram, [
             (self.vbo, '3f 2f', 'in_vertex', 'in_texcoord')
         ], self.ebo)
+
+        self.instancesVao = None
     
-    def draw(self):
+    def render(self):
         self.vao.render()
 
+    def use(self):
+        self.material.use()
+
 class Mesh:
-    def __init__(self, modelPath, vertexShaderPath, fragmentShaderPath):
+    def __init__(self, modelPath, vertexShaderPath, fragmentShaderPath, textures):
         self.glContext = gl.get_context()
         self.shaderProgram = loadShaders(vertexShaderPath, fragmentShaderPath)
         # objScene = assimp.ImportFile(getPath(modelPath), (assimp.Process_Triangulate))
@@ -28,21 +37,29 @@ class Mesh:
         obj = Obj(getPath(modelPath))
 
         self.numMaterials = obj.numMaterials
-        self.subMeshes = [SubMesh(obj.vertexDataPerMaterial[materialIndex], obj.facesPerMaterial[materialIndex], self.shaderProgram) for materialIndex in range(obj.numMaterials)]
+        self.subMeshes: list[SubMesh] = []
+        for materialIndex in range(obj.numMaterials):
+            
+            subMesh = SubMesh(obj.vertexDataPerMaterial[materialIndex],
+                              obj.facesPerMaterial[materialIndex],
+                              self.shaderProgram,
+                              textures[obj.materials[materialIndex]])
+            
+            self.subMeshes.append(subMesh)
 
-        self.vaos = []
         self.numInstances = 0
 
-    def draw(self):
+    def render(self):
         for subMesh in self.subMeshes:
-            subMesh.draw()
+            subMesh.use()
+            subMesh.render()
 
-    def drawInstances(self):
-        if self.vaos == None:
-            return
-        
-        for vao in self.vaos:
-            vao.render(instances = self.numInstances)
+    def renderInstances(self):        
+        for subMesh in self.subMeshes:
+            if subMesh.instancesVao == None:
+                return
+            subMesh.use()
+            subMesh.instancesVao.render(instances = self.numInstances)
 
     def updateInstances(self, instancePositions, instanceRotations):
         instanceTransforms = []
@@ -61,14 +78,11 @@ class Mesh:
         transformsVbo = self.glContext.buffer(instanceTransforms.tobytes())
         translationsVbo = self.glContext.buffer(instancePositions.tobytes())
 
-        self.vaos.clear()
         for subMesh in self.subMeshes:
-            vao = self.glContext.vertex_array(self.shaderProgram, [
+            subMesh.instancesVao = self.glContext.vertex_array(self.shaderProgram, [
                 (subMesh.vbo, '3f 2f', 'in_vertex', 'in_texcoord'),
                 (transformsVbo, "16f/i", "in_instanceTransform"),
                 (translationsVbo, "3f/i", "in_instanceTranslation")
             ], index_buffer=subMesh.ebo)
-
-            self.vaos.append(vao)
 
         self.numInstances = len(instancePositions)
