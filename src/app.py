@@ -75,9 +75,7 @@ class App:
             mouseDelta = self.inputHandler.getMouseDelta()
             if mouseDelta != None:
                 self.camera.processRotationInput(mouseDelta)
-        else:
-            self.inputHandler.currentMousePos = glm.ivec2(0, 0)
-
+                
     def handleKeyHoldEvents(self):
         self.camera.processMovementInput(self.inputHandler, self.deltaTime)
 
