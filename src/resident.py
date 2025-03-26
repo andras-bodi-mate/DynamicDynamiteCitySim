@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from datetime import date
 
 class Occupation(Enum):
     No = 0
@@ -16,7 +15,7 @@ class Occupation(Enum):
 class Resident:
     id: int
     name: str
-    dateOfBirth: date
+    birthYear: int
     occupation: Occupation
     residence: int
     happiness: int

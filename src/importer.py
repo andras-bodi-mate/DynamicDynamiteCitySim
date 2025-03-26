@@ -2,8 +2,6 @@ import csv
 import tkinter as tk
 import tkinter.filedialog as fd
 
-from datetime import datetime
-
 from utilities import getPath
 from building import BuildingType, BuildingData
 from resident import Resident, Occupation
@@ -12,12 +10,16 @@ from service import Service, ServiceType
 class Importer:
     buildingTypes = {
         "Lakóház": BuildingType.Residential,
-        "Iskola": BuildingType.School,
+        "Oktatás": BuildingType.Education,
         "Tűzoltóság": BuildingType.FireDepartment,
         "Rendőrség": BuildingType.Police,
-        "Kórház": BuildingType.Hospital,
+        "Egészségügy": BuildingType.HealthCare,
         "Iroda": BuildingType.Office,
-        "Művelődési ház": BuildingType.CommunityCenter
+        "Kormányzati": BuildingType.Governmental,
+        "Művelődési ház": BuildingType.CommunityCenter,
+        "Kereskedelem": BuildingType.Trade,
+        "Sport": BuildingType.Sport,
+        "Közlekedés": BuildingType.Transportation
     }
 
     occupationTypes = {
@@ -34,13 +36,14 @@ class Importer:
     serviceTypes = {
         "Egészségügy": ServiceType.HealthCare,
         "Oktatás": ServiceType.Education,
-        "Tűzoltóság": ServiceType.FireDepartment
+        "Tűzoltóság": ServiceType.FireDepartment,
+        "Közlekedés": ServiceType.Transportation
     }
 
     fileTypes = [("CSV Files", "*.csv"), ("Text Files", "*.txt"), ("All Files", "*.*")]
     fileDialogTitles = [f"Válassza ki a .csv fájlt ami tartalmazza a(z) {s} adatait." for s in ("épületek", "lakosok", "szolgáltatások")]
 
-    dateTimeFormats = (r"%d/%m/%Y %H:%M:%S", r"%d/%m/%Y %H:%M:%S")
+    dateTimeFormat = r"%d/%m/%Y %H:%M:%S"
 
     def __init__(self):
         self.buildingData: list[BuildingData] = []
@@ -48,36 +51,37 @@ class Importer:
         self.serviceData: list[Service] = []
 
     def extractRowsFromFile(self, fileName):
-        with open(fileName, mode='r') as file:
+        with open(fileName, mode = 'r') as file:
             for row in csv.reader(file):
+                print(row)
                 yield row
 
     def importBuildings(self, fileName):
         for row in self.extractRowsFromFile(fileName):
-            id, name, buildingType, constructionDate, usableArea = row
+            id, name, buildingType, constructionYear, usableArea = row
             id = int(float(id))
-            buildingType = Importer.buildingTypes[buildingType]
-            constructionDate = datetime.strptime(constructionDate, Importer.dateTimeFormat)
+            buildingType = Importer.buildingTypes[buildingType.strip()]
+            constructionYear = int(float(constructionYear))
             usableArea = float(usableArea)
 
-            self.buildingData.append(BuildingData(id, name, buildingType, constructionDate, usableArea,100))
+            self.buildingData.append(BuildingData(id, name, buildingType, constructionYear, usableArea,100))
 
     def importResidents(self, fileName):
         for row in self.extractRowsFromFile(fileName):
-            id, name, dateOfBirth, occupation, residence = row
+            id, name, birthYear, occupation, residence = row
             id = int(float(id))
-            dateOfBirth = datetime.strptime(dateOfBirth, Importer.dateTimeFormat)
-            occupation = Importer.occupationTypes[occupation]
+            birthYear = int(float(birthYear))
+            occupation = Importer.occupationTypes[occupation.strip()]
             residence = int(float(residence))
 
-            self.buildingData.append(Resident(id, name, dateOfBirth, occupation, residence, 100))
+            self.residentData.append(Resident(id, name, birthYear, occupation, residence, 100))
 
     def importServices(self, fileName):
         for row in self.extractRowsFromFile(fileName):
             id, name, serviceType, affectedBuildings = row
             id = int(float(id))
-            serviceType = Importer.serviceTypes[serviceType]
-            affectedBuildings = map(int, map(float, affectedBuildings.split(' ')))
+            serviceType = Importer.serviceTypes[serviceType.strip()]
+            affectedBuildings = tuple(map(int, map(float, affectedBuildings.split(' '))))
 
             self.serviceData.append(Service(id, name, serviceType, affectedBuildings))
 

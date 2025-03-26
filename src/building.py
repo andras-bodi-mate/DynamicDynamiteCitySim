@@ -1,4 +1,3 @@
-from datetime import date
 from enum import Enum
 from dataclasses import dataclass, field
 
@@ -9,19 +8,23 @@ from mesh import Mesh
 
 class BuildingType(Enum):
     Residential = 0
-    School = 1
+    Education = 1
     FireDepartment = 2
     Police = 3
-    Hospital = 4
+    HealthCare = 4
     Office = 5
-    CommunityCenter = 6
+    Governmental = 6
+    CommunityCenter = 7
+    Trade = 8
+    Sport = 9
+    Transportation = 10
 
 @dataclass
 class BuildingData:
     id: int
     name: str
     type: BuildingType
-    constructionDate: date
+    constructionYear: int
     usableArea: float
     condition: int
 

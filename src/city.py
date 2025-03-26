@@ -1,10 +1,11 @@
 import moderngl as gl
 import glm
 
+from datetime import date
 from dateutil.relativedelta import relativedelta
 from random import randint
 
-from building import Building, BuildingType, BuildingData, BuildingRenderer, date
+from building import Building, BuildingType, BuildingData, BuildingRenderer
 from street import Street, StreetRenderer
 from intersection import Intersection
 from resident import Resident
@@ -40,7 +41,7 @@ class City:
 
         rotation = glm.vec3(0, 0, 0)
         if buildingData == None:
-            buildingData = BuildingData(0, "building", BuildingType.Residential, date.today(), 750, 5)
+            buildingData = BuildingData(0, "building", BuildingType.Residential, self.date, 750, 5)
 
         self.buildings.append(Building(buildingData, buildingPosition, rotation))
 
@@ -70,9 +71,17 @@ class City:
         self.importer.openAndImportFiles()
         for buildingData in self.importer.buildingData:
             self.constructBuilding(buildingData)
+        
+        for resident in self.importer.residentData:
+            self.residents.append(resident)
+
+        for service in self.importer.serviceData:
+            self.services.append(service)
 
     def exportAllData(self):
         self.exporter.exportBuildings(self.buildings, "out\\Épületek.csv")
+        self.exporter.exportResidents(self.residents, "out\\Lakosok.csv")
+        self.exporter.exportServices(self.services, "out\\Szolgáltatások.csv")
 
     def updateResidents(self):
         numServices = len(self.services)
@@ -86,7 +95,7 @@ class City:
     
     def updateBuildings(self):
         for building in self.buildings:
-            occupants = sum((True for resident in self.residents if resident.residence == building.id))
+            occupants = sum((True for resident in self.residents if resident.residence == building.data.id))
 
             chance = randint(1, 10)
             buildingNewCondition = building.data.condition - occupants

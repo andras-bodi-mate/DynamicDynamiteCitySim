@@ -1,15 +1,10 @@
-1.00,"Fï¿½ldes Ferenc Gimnï¿½zium","Iskola",1911.02.01,5000.00
-2.00,"Vasgyï¿½ri kï¿½rhï¿½z","Kï¿½rhï¿½z",1963.01.01,300.00
-3.00,"Miskolci egyetem","Iskola",1950.01.01,540000.00
-4.00,"Lakï¿½hï¿½z1","Lakï¿½hï¿½z",2000.01.01,250.00
-5.00,"Lakï¿½hï¿½z2","Lakï¿½hï¿½z",1875.01.01,400.00
-6.00,"Lakï¿½hï¿½z3","Lakï¿½hï¿½z",1965.01.01,1200.00
-7.00,"Megyei korhï¿½z","Kï¿½rhï¿½z",1959.01.01,30000.00
-8.00,"Minorita menza","Rendï¿½rsï¿½g",1887.01.01,500.00
-9.00,"Lakï¿½hï¿½z4","Lakï¿½hï¿½z",2019.01.01,500.00
-10.00,"ï¿½lomkï¿½rhï¿½z","Kï¿½rhï¿½z",1897.01.01,300.00
-11.00,"Tï¿½zoltï¿½sï¿½g","Tï¿½zoltï¿½sï¿½g",1918.01.01,2112.00
-12.00,"Lakï¿½hï¿½z5","Lakï¿½hï¿½z",2006.01.01,1200.00
-13.00,"Lakï¿½hï¿½z6","Lakï¿½hï¿½z",2000.01.01,600.00
-14.00,"Rendï¿½rsï¿½g","Rendï¿½rsï¿½g",1955.01.01,2500.00
-15.00,"Tï¿½zoltï¿½sï¿½g2","Tï¿½zoltï¿½sï¿½g",1800.01.01,2700.00
+1,"Központi Kórház","Egészségügy",1995,2500
+2,"Városháza","Kormányzati",1980,1500
+3,"Városi Könyvtár","Oktatás",1990,1200
+4,"Kereskedelmi Központ","Kereskedelem",2005,5000
+5,"Iskola","Oktatás",2000,1800
+6,"Lakóház 1","Lakóház",2001,1000
+7,"Lakóház 2","Lakóház",2003,950
+8,"Sportcsarnok","Sport",2010,2500
+9,"Buszpályaudvar","Közlekedés",1998,3000
+10,"Irodaház","	Iroda",2015,2000

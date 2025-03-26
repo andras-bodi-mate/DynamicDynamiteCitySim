@@ -5,6 +5,7 @@ class ServiceType(Enum):
     HealthCare = 0
     Education = 1
     FireDepartment = 2
+    Transportation = 3
 
 @dataclass
 class Service:
