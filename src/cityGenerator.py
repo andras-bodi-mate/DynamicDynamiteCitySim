@@ -93,8 +93,8 @@ class CellType(Enum):
     Building = 3
 
 class CityGenerator:
-    def __init__(self, numBuildings, streetMinDistance = 5, streetMaxDistance = 7):
-        self.numBuildings = numBuildings
+    def __init__(self, streetMinDistance = 5, streetMaxDistance = 7):
+        self.numBuildings = 0
         self.streetMinDistance = streetMinDistance
         self.streetMaxDistance = streetMaxDistance
 

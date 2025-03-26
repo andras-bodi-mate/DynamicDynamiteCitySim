@@ -40,7 +40,7 @@ class Importer:
     fileTypes = [("CSV Files", "*.csv"), ("Text Files", "*.txt"), ("All Files", "*.*")]
     fileDialogTitles = [f"Válassza ki a .csv fájlt ami tartalmazza a(z) {s} adatait." for s in ("épületek", "lakosok", "szolgáltatások")]
 
-    dateTimeFormat = r"%d/%m/%Y %H:%M:%S"
+    dateTimeFormats = (r"%d/%m/%Y %H:%M:%S", r"%d/%m/%Y %H:%M:%S")
 
     def __init__(self):
         self.buildingData: list[BuildingData] = []

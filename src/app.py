@@ -16,7 +16,6 @@ class App:
         self.camera = Camera(self.window, 80)
         self.scene = Scene()
 
-
         print(self.window.ui.mainWindow.viewport.center)
         self.inputHandler = InputHandler(self.window.ui.mainWindow.viewport.center)
 
@@ -75,7 +74,7 @@ class App:
             mouseDelta = self.inputHandler.getMouseDelta()
             if mouseDelta != None:
                 self.camera.processRotationInput(mouseDelta)
-                
+
     def handleKeyHoldEvents(self):
         self.camera.processMovementInput(self.inputHandler, self.deltaTime)
 

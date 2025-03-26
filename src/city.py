@@ -7,10 +7,11 @@ from random import randint
 from building import Building, BuildingType, BuildingData, BuildingRenderer, date
 from street import Street, StreetRenderer
 from intersection import Intersection
-from cityGenerator import CityGenerator
-from importer import Importer
 from resident import Resident
 from service import Service
+from cityGenerator import CityGenerator
+from importer import Importer
+from exporter import Exporter
 
 class City:
     def __init__(self):
@@ -21,8 +22,9 @@ class City:
         self.residents: list[Resident] = []
         self.services: list[Service] = []
 
-        self.cityGenerator = CityGenerator(0)
+        self.cityGenerator = CityGenerator()
         self.importer = Importer()
+        self.exporter = Exporter()
         self.streetRenderer = StreetRenderer()
         self.buildingRenderer = BuildingRenderer()
 
@@ -69,6 +71,9 @@ class City:
         for buildingData in self.importer.buildingData:
             self.constructBuilding(buildingData)
 
+    def exportAllData(self):
+        self.exporter.exportBuildings(self.buildings, "out\\Épületek.csv")
+
     def updateResidents(self):
         numServices = len(self.services)
         for resident in self.residents:
@@ -95,6 +100,7 @@ class City:
         self.date += relativedelta(months = 1)
         self.updateBuildings()
         self.updateResidents()
+        self.exportAllData()
 
     def calculateStatistics(self):
         if len(self.residents) != 0:
