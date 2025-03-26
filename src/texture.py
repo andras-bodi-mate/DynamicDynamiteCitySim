@@ -1,7 +1,7 @@
 import moderngl as gl
 from PIL import Image as im
 
-from pathHandler import getPath
+from utilities import getPath
 
 class Texture:
     def __init__(self, path):

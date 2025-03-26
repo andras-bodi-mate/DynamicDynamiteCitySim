@@ -4,25 +4,8 @@ import PyQt6.QtCore as qtc
 import moderngl as gl
 import glm
 
-from pathHandler import getPath
-
-class ViewportEventHandler(qtc.QObject):
-    mouseMoved = qtc.pyqtSignal(int, int)
-    mousePressed = qtc.pyqtSignal()
-
-    def __init__(self):
-        super().__init__()
-        
-        self.lastMousePos = None
-    
-    def getMouseDeltaPos(self, newPos):
-        if not self.lastMousePos:
-            self.lastMousePos = newPos
-            return glm.ivec2(0, 0)
-        
-        deltaPos = newPos - self.lastMousePos
-        self.lastMousePos = newPos
-        return deltaPos
+from utilities import getPath
+from city import City
 
 class Viewport(qtg.QWindow):
     def __init__(self):
@@ -31,8 +14,6 @@ class Viewport(qtg.QWindow):
         self.setSurfaceType(qtg.QWindow.SurfaceType.OpenGLSurface)
         self.setFlags(qtc.Qt.WindowType.FramelessWindowHint)
         self.setMouseGrabEnabled(True)
-
-        self.eventHandler = ViewportEventHandler()
 
         fmt = qtg.QSurfaceFormat()
         fmt.setRenderableType(qtg.QSurfaceFormat.RenderableType.OpenGL)
@@ -48,22 +29,15 @@ class Viewport(qtg.QWindow):
         self.context.create()
         self.context.makeCurrent(self)
 
-    def getCenterPos(self):
-        return self.position() + qtc.QPoint(self.width() // 2, self.height() // 2)
+    def centerCursor(self):
+        centerPos = self.getCenterPos()
+        qtg.QCursor.setPos(qtc.QPoint(centerPos.x, centerPos.y))
 
-    def mouseMoveEvent(self, event):
-        if self.hasFocus:
-            center = self.getCenterPos()
-            center = glm.ivec2(center.x(), center.y())
-            newPos = event.position()
-            newPos = glm.ivec2(newPos.x(), newPos.y())
-            mouseDelta = newPos - center + glm.ivec2(9, 9) #TODO: Why is it off by 9 pixels on both axes?
-            qtg.QCursor.setPos(center.x, center.y)
-            self.eventHandler.mouseMoved.emit(mouseDelta.x, mouseDelta.y)
+    def getCenterPos(self):
+        position = self.position()
+        return glm.ivec2(position.y(), position.x()) + glm.ivec2(self.width() // 2, self.height() // 2)
 
     def mousePressEvent(self, event):
-        self.eventHandler.mousePressed.emit()
-
         if event.button() == qtc.Qt.MouseButton.LeftButton:
             self.lockCursor()
 
@@ -72,16 +46,18 @@ class Viewport(qtg.QWindow):
             self.unlockCursor()
 
     def lockCursor(self):
-        self.hasFocus = True
-        self.setCursor(qtg.QCursor(qtc.Qt.CursorShape.BlankCursor))
-        qtg.QGuiApplication.setOverrideCursor(qtc.Qt.CursorShape.BlankCursor)
-        
-        qtg.QCursor.setPos(self.getCenterPos())
+        if self.hasFocus == False:
+            self.hasFocus = True
+            self.setCursor(qtg.QCursor(qtc.Qt.CursorShape.BlankCursor))
+            qtg.QGuiApplication.setOverrideCursor(qtc.Qt.CursorShape.BlankCursor)
+            self.centerCursor()
 
     def unlockCursor(self):
-        self.hasFocus = False
-        self.setCursor(qtg.QCursor(qtc.Qt.CursorShape.ArrowCursor))
-        qtg.QGuiApplication.restoreOverrideCursor()
+        if self.hasFocus == True:
+            self.hasFocus = False
+            self.setCursor(qtg.QCursor(qtc.Qt.CursorShape.ArrowCursor))
+            qtg.QGuiApplication.restoreOverrideCursor()
+            self.centerCursor()
 
     def swapBuffers(self):
         self.context.swapBuffers(self)
@@ -93,6 +69,20 @@ class Button(qtw.QPushButton):
     def __init__(self, text):
         super().__init__(text)
         self.setFixedHeight(40)
+
+class StatisticsPopup(qtw.QDialog):
+    def __init__(self):
+        super().__init__()
+        self.closeButton = Button("Close")
+        layout = qtw.QVBoxLayout()
+        self.averageResidentHappinessLabel = qtw.QLabel()
+        self.averageBuildingConditionLabel = qtw.QLabel()
+        layout.addWidget(self.averageResidentHappinessLabel)
+        layout.addWidget(self.averageBuildingConditionLabel)
+        layout.addWidget(self.closeButton)
+        self.setLayout(layout)
+        self.setFixedHeight(200)
+        self.setWindowFlag(qtc.Qt.WindowType.FramelessWindowHint)
 
 class MainWindow(qtw.QMainWindow):
     def __init__(self):
@@ -107,9 +97,10 @@ class MainWindow(qtw.QMainWindow):
 
         self.constructBuildingButton = Button("Új épület építése")
         self.loadDatabaseButton = Button("Adatbázis betöltése")
-
         self.nextMonthButton = Button("Következő hónap")
         self.dateLabel = qtw.QLabel()
+        self.statisticsPopupButton = Button("Statisztika")
+
         self.dateLabel.setText("")
         self.dateLabel.setAlignment(qtc.Qt.AlignmentFlag.AlignHCenter)
         datePanelLayout = qtw.QVBoxLayout()
@@ -125,18 +116,19 @@ class MainWindow(qtw.QMainWindow):
         bottomPanelLayout.addWidget(self.constructBuildingButton)
         bottomPanelLayout.addWidget(self.loadDatabaseButton)
         bottomPanelLayout.addWidget(datePanel)
-        bottomPanelLayout.addWidget(Button("Button4"))
+        bottomPanelLayout.addWidget(self.statisticsPopupButton)
         bottomPanelLayout.addWidget(Button("Button5"))
 
         bottomPanel = qtw.QWidget()
         bottomPanel.setLayout(bottomPanelLayout)
         bottomPanel.setFixedHeight(100)
 
-
         self.viewport = Viewport()
         viewportWidget = qtw.QWidget.createWindowContainer(self.viewport)
         mainLayout.addWidget(viewportWidget)
         mainLayout.addWidget(bottomPanel)
+
+        self.statisticsPopup = StatisticsPopup()
 
         self.setCentralWidget(mainContainer)
 
@@ -145,3 +137,42 @@ class MainWindow(qtw.QMainWindow):
 
     def updateDateLabel(self, text):
         self.dateLabel.setText(text)
+
+class UI:
+    def __init__(self):
+        self.qtApp = qtw.QApplication([])
+        with open(getPath("res\\styles\\darkstyle.qss"), "r") as file:
+            self.qtApp.setStyleSheet(file.read())
+
+        self.mainWindow = MainWindow()
+        self.mainWindow.showFullScreen()
+
+        self.qtApp.processEvents()
+        self.mainWindow.viewport.makeCurrent()
+        self.glContext = gl.create_context()
+        self.isOpen = True
+
+        self.glContext.viewport = (0, 0, 1920, 1080)
+        self.mainWindow.viewport.glContext = self.glContext
+
+    def close(self):
+        self.mainWindow.close()
+
+    def processEvents(self):
+        self.qtApp.processEvents()
+        self.isOpen = self.mainWindow.isOpen
+
+    def openStatisticsPopup(self, city: City):
+        averageResidentHappiness, averageBuildingCondition = city.calculateStatistics()
+
+        averageResidentHappinessText = f"Lakosok átlag boldogsága: {
+            "%.2f" % averageResidentHappiness if averageResidentHappiness != None else "Nincsenek lakosok"
+        }"
+        averageBuildingConditionText = f"Épületeg átlag állapota: {
+            "%.2f" % averageBuildingCondition if averageBuildingCondition != None else "Nincsenek épületek"
+        }"
+
+        self.mainWindow.statisticsPopup.averageResidentHappinessLabel.setText(averageResidentHappinessText)
+        self.mainWindow.statisticsPopup.averageBuildingConditionLabel.setText(averageBuildingConditionText)
+
+        self.mainWindow.statisticsPopup.exec()

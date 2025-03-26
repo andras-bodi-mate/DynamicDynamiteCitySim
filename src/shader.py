@@ -1,6 +1,6 @@
 import moderngl as gl
 
-from pathHandler import getPath
+from utilities import getPath
 
 def loadShaders(vertexShader, fragmentShader):
     glContext = gl.get_context()

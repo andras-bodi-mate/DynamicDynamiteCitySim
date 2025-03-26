@@ -1,6 +1,8 @@
 import glm
 import numpy as np
-import keyboard as kb
+from pynput.keyboard import Key
+
+from inputHandler import InputHandler
 
 class Camera:
     def __init__(self, window, FOV, nearClip = 0.5, farClip = 1000.0):
@@ -16,20 +18,19 @@ class Camera:
         self.projection = glm.perspective(glm.radians(FOV), window.size.x / window.size.y, nearClip, farClip)
         self.processRotationInput(glm.vec2(0.0, 0.0))
     
-    def processMovementInput(self, deltaTime):
-        if kb.is_pressed('W'):  # Move forward
+    def processMovementInput(self, inpuHandler: InputHandler, deltaTime):
+        if inpuHandler.isPressed('w'):  # Move forward
             self.position += self.speed * glm.normalize(glm.vec3(self.front.x, 0, self.front.z)) * deltaTime
-        if kb.is_pressed('S'):  # Move backward
+        if inpuHandler.isPressed('s'):  # Move backward
             self.position -= self.speed * glm.normalize(glm.vec3(self.front.x, 0, self.front.z)) * deltaTime
-        if kb.is_pressed('A'):  # Move left
+        if inpuHandler.isPressed('a'):  # Move left
             self.position -= glm.normalize(glm.cross(self.front, self.up)) * self.speed * deltaTime
-        if kb.is_pressed('D'):  # Move right
+        if inpuHandler.isPressed('d'):  # Move right
             self.position += glm.normalize(glm.cross(self.front, self.up)) * self.speed * deltaTime
-        if kb.is_pressed('SPACE'):
+        if inpuHandler.isPressed(Key.space):
             self.position += self.speed * self.up * deltaTime
-        if kb.is_pressed('SHIFT'):
+        if inpuHandler.isPressed(Key.shift_l):
             self.position -= self.speed * self.up * deltaTime
-    
     
     def processRotationInput(self, deltaPos):
         self.yaw += deltaPos.x * self.sensitivity

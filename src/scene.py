@@ -8,9 +8,9 @@ from horizon import Horizon
 from mesh import Mesh
 
 class Scene:
-    def __init__(self, window: Window):
-        self.window = window
-        self.city = City(window.glContext)
+    def __init__(self):
+        self.glContext = gl.get_context()
+        self.city = City()
         self.horizon = Horizon("shaders\\horizonVertexShader.glsl", "shaders\\horizonFragmentShader.glsl")
         self.backdrop = Mesh("res\\models\\backdrop.obj", "shaders\\vertexShader.glsl", "shaders\\fragmentShader.glsl",
                              {"Grass": "res\\textures\\Grass\\grassBaseColor.jpg"})

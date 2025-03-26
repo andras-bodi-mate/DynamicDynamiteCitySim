@@ -4,7 +4,7 @@ import tkinter.filedialog as fd
 
 from datetime import datetime
 
-from pathHandler import getPath
+from utilities import getPath
 from building import BuildingType, BuildingData
 from resident import Resident, Occupation
 from service import Service, ServiceType

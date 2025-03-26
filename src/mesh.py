@@ -2,7 +2,7 @@ import moderngl as gl
 import numpy as np
 from pyglm import glm
 
-from pathHandler import getPath
+from utilities import getPath
 from shader import loadShaders
 from material import Material
 from obj import Obj

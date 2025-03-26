@@ -1,3 +1,4 @@
+import moderngl as gl
 import glm
 
 from dateutil.relativedelta import relativedelta
@@ -12,8 +13,8 @@ from resident import Resident
 from service import Service
 
 class City:
-    def __init__(self, glContext):
-        self.glContext = glContext
+    def __init__(self):
+        self.glContext = gl.get_context()
         self.buildings: list[Building] = []
         self.streets: list[Street] = []
         self.intersections: list[Intersection] = []
@@ -94,7 +95,20 @@ class City:
         self.date += relativedelta(months = 1)
         self.updateBuildings()
         self.updateResidents()
-    
+
+    def calculateStatistics(self):
+        if len(self.residents) != 0:
+            averageResidentHappiness = sum(resident.happiness for resident in self.residents) / len(self.residents)
+        else:
+            averageResidentHappiness = None
+
+        if len(self.buildings) != 0:
+            averageBuildingCondition = sum(building.data.condition for building in self.buildings) / len(self.buildings)
+        else:
+            averageBuildingCondition = None
+
+        return averageResidentHappiness, averageBuildingCondition
+
     def render(self):
         self.streetRenderer.render()
         self.buildingRenderer.render()

@@ -1,6 +1,6 @@
 import numpy as np
 
-from pathHandler import getPath
+from utilities import getPath
 
 class Obj:
     def __init__(self, fileName):

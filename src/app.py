@@ -1,6 +1,7 @@
 import PyQt6.QtCore as qtc
 import glm
 
+from inputHandler import InputHandler
 from window import Window
 from camera import Camera
 from scene import Scene
@@ -13,19 +14,24 @@ class App:
 
         self.window = Window()
         self.camera = Camera(self.window, 80)
-        self.scene = Scene(self.window)
+        self.scene = Scene()
 
-        self.window.mainWindow.constructBuildingButton.clicked.connect(
+        self.inputHandler = InputHandler(self.window.ui.mainWindow.viewport.getCenterPos())
+
+        self.window.ui.mainWindow.constructBuildingButton.clicked.connect(
             lambda: self.scene.city.constructBuilding()
         )
-        self.window.mainWindow.loadDatabaseButton.clicked.connect(
+        self.window.ui.mainWindow.loadDatabaseButton.clicked.connect(
             lambda: self.scene.city.importFilesAndConstruct()
         )
-        self.window.mainWindow.nextMonthButton.clicked.connect(
+        self.window.ui.mainWindow.nextMonthButton.clicked.connect(
             lambda: self.updateToNextMonth()
         )
-        self.window.mainWindow.viewport.eventHandler.mouseMoved.connect(
-            self.handleMouseMotionEvents
+        self.window.ui.mainWindow.statisticsPopupButton.clicked.connect(
+            lambda: self.window.ui.openStatisticsPopup(self.scene.city)
+        )
+        self.window.ui.mainWindow.statisticsPopup.closeButton.clicked.connect(
+            lambda: self.window.ui.mainWindow.statisticsPopup.close()
         )
 
     def close(self):
@@ -38,6 +44,7 @@ class App:
     def processEvents(self):
         self.window.processEvents()
         self.handleKeyHoldEvents()
+        self.handleMouseMotionEvents()
 
         if not self.window.isOpen:
             self.isRunning = False
@@ -61,17 +68,20 @@ class App:
     def handleMouseUpEvents(self, button, pos):
         pass
 
-    def handleMouseMotionEvents(self, deltaPosX, deltaPosY):
-        self.camera.processRotationInput(glm.ivec2(deltaPosX, deltaPosY))
+    def handleMouseMotionEvents(self):
+        if self.window.ui.mainWindow.viewport.hasFocus:
+            mouseDelta = self.inputHandler.getMouseDelta()
+            if mouseDelta != None:
+                self.camera.processRotationInput(mouseDelta)
 
     def handleKeyHoldEvents(self):
-        self.camera.processMovementInput(self.deltaTime)
+        self.camera.processMovementInput(self.inputHandler, self.deltaTime)
 
     def updateToNextMonth(self):
         self.scene.city.updateToNextMonth()
 
     def render(self):
-        self.window.mainWindow.updateDateLabel(str(self.scene.city.date))
+        self.window.ui.mainWindow.updateDateLabel(str(self.scene.city.date))
         self.camera.calculateViewMatrix()
         self.camera.updateUniforms(self.scene.city.buildingRenderer.mesh.shaderProgram)
         self.camera.updateUniforms(self.scene.city.streetRenderer.mesh.shaderProgram)
@@ -80,6 +90,6 @@ class App:
         self.scene.horizon.updateUniforms(self.window.size, self.camera.fov)
 
         self.window.glContext.enable(self.window.glContext.DEPTH_TEST)
-        self.window.glContext.clear(0.5, 0.7, 0.8)
+        self.window.glContext.clear(0.0, 0.0, 0.0)
         self.scene.render()
-        self.window.mainWindow.viewport.swapBuffers()
+        self.window.ui.mainWindow.viewport.swapBuffers()
