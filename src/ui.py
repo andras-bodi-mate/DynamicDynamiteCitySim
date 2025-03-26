@@ -8,7 +8,7 @@ from utilities import getPath
 from city import City
 
 class Viewport(qtg.QWindow):
-    def __init__(self):
+    def __init__(self, qtApp):
         super().__init__()
 
         self.setSurfaceType(qtg.QWindow.SurfaceType.OpenGLSurface)
@@ -24,18 +24,18 @@ class Viewport(qtg.QWindow):
         self.glContext: gl.Context = None
         self.hasFocus = False
 
+        primaryScreen = qtApp.primaryScreen()
+        screenSize = primaryScreen.size()
+        self.pixelRatio = primaryScreen.devicePixelRatio()
+        self.center = glm.ivec2(screenSize.width() * self.pixelRatio / 2, screenSize.height() * self.pixelRatio / 2)
+
         self.context = qtg.QOpenGLContext(self)
         self.context.setFormat(self.format())
         self.context.create()
         self.context.makeCurrent(self)
 
     def centerCursor(self):
-        centerPos = self.getCenterPos()
-        qtg.QCursor.setPos(qtc.QPoint(centerPos.x, centerPos.y))
-
-    def getCenterPos(self):
-        position = self.position()
-        return glm.ivec2(position.y(), position.x()) + glm.ivec2(self.width() // 2, self.height() // 2)
+        qtg.QCursor.setPos(qtc.QPoint(int(self.center.x / self.pixelRatio), int(self.center.y / self.pixelRatio)))
 
     def mousePressEvent(self, event):
         if event.button() == qtc.Qt.MouseButton.LeftButton:
@@ -58,6 +58,9 @@ class Viewport(qtg.QWindow):
             self.setCursor(qtg.QCursor(qtc.Qt.CursorShape.ArrowCursor))
             qtg.QGuiApplication.restoreOverrideCursor()
             self.centerCursor()
+
+    def focusOutEvent(self, event):
+        self.unlockCursor()
 
     def swapBuffers(self):
         self.context.swapBuffers(self)
@@ -85,7 +88,7 @@ class StatisticsPopup(qtw.QDialog):
         self.setWindowFlag(qtc.Qt.WindowType.FramelessWindowHint)
 
 class MainWindow(qtw.QMainWindow):
-    def __init__(self):
+    def __init__(self, qtApp):
         super().__init__()
 
         self.isOpen = True
@@ -123,7 +126,7 @@ class MainWindow(qtw.QMainWindow):
         bottomPanel.setLayout(bottomPanelLayout)
         bottomPanel.setFixedHeight(100)
 
-        self.viewport = Viewport()
+        self.viewport = Viewport(qtApp)
         viewportWidget = qtw.QWidget.createWindowContainer(self.viewport)
         mainLayout.addWidget(viewportWidget)
         mainLayout.addWidget(bottomPanel)
@@ -144,7 +147,7 @@ class UI:
         with open(getPath("res\\styles\\darkstyle.qss"), "r") as file:
             self.qtApp.setStyleSheet(file.read())
 
-        self.mainWindow = MainWindow()
+        self.mainWindow = MainWindow(self.qtApp)
         self.mainWindow.showFullScreen()
 
         self.qtApp.processEvents()

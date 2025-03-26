@@ -16,7 +16,9 @@ class App:
         self.camera = Camera(self.window, 80)
         self.scene = Scene()
 
-        self.inputHandler = InputHandler(self.window.ui.mainWindow.viewport.getCenterPos())
+
+        print(self.window.ui.mainWindow.viewport.center)
+        self.inputHandler = InputHandler(self.window.ui.mainWindow.viewport.center)
 
         self.window.ui.mainWindow.constructBuildingButton.clicked.connect(
             lambda: self.scene.city.constructBuilding()
@@ -73,6 +75,8 @@ class App:
             mouseDelta = self.inputHandler.getMouseDelta()
             if mouseDelta != None:
                 self.camera.processRotationInput(mouseDelta)
+        else:
+            self.inputHandler.currentMousePos = glm.ivec2(0, 0)
 
     def handleKeyHoldEvents(self):
         self.camera.processMovementInput(self.inputHandler, self.deltaTime)
