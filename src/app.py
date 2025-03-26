@@ -16,7 +16,6 @@ class App:
         self.camera = Camera(self.window, 80)
         self.scene = Scene()
 
-        print(self.window.ui.mainWindow.viewport.center)
         self.inputHandler = InputHandler(self.window.ui.mainWindow.viewport.center)
 
         self.window.ui.mainWindow.constructBuildingButton.clicked.connect(

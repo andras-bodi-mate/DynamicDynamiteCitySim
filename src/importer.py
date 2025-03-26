@@ -53,7 +53,6 @@ class Importer:
     def extractRowsFromFile(self, fileName):
         with open(fileName, mode = 'r') as file:
             for row in csv.reader(file):
-                print(row)
                 yield row
 
     def importBuildings(self, fileName):

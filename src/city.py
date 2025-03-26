@@ -3,7 +3,7 @@ import glm
 
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from random import randint
+from random import randint, random
 
 from building import Building, BuildingType, BuildingData, BuildingRenderer
 from street import Street, StreetRenderer
@@ -13,6 +13,7 @@ from service import Service
 from cityGenerator import CityGenerator
 from importer import Importer
 from exporter import Exporter
+from utilities import getRotationFromVector
 
 class City:
     def __init__(self):
@@ -39,11 +40,13 @@ class City:
         newBuilding, newStreetSegments, newIntersections = self.cityGenerator.constructNewBuilding()
         buildingPosition = glm.vec3(10 * newBuilding.pos.x, 0, 10 * newBuilding.pos.y)
 
-        rotation = glm.vec3(0, 0, 0)
+        rotation = getRotationFromVector(newBuilding.direction) + 90.0
         if buildingData == None:
-            buildingData = BuildingData(0, "building", BuildingType.Residential, self.date, 750, 5)
+            buildingData = BuildingData(0, "Új épület", BuildingType.Residential, self.date, 750, 100)
+        buildingPosition += 2 * glm.vec3(newBuilding.direction.x, 0.0, newBuilding.direction.y)
+        buildingPosition += 1.0 * (glm.vec3(random(), 0.0, random()) - glm.vec3(0.5, 0.0, 0.5))
 
-        self.buildings.append(Building(buildingData, buildingPosition, rotation))
+        self.buildings.append(Building(buildingData, buildingPosition, glm.vec3(0.0, rotation, 0.0)))
 
         for street in newStreetSegments:
             position = glm.vec3(10 * street.pos.x, 0, 10 * street.pos.y)
@@ -52,16 +55,7 @@ class City:
         
         for intersection in newIntersections:
             position = glm.vec3(intersection.pos.x*10, 0, intersection.pos.y*10)
-            if intersection.direction.y == 0:
-                if intersection.direction.x > 0:
-                    rotation = 270
-                else:
-                    rotation = 90
-            else:
-                if intersection.direction.y > 0:
-                    rotation = 0
-                else:
-                    rotation = 180
+            rotation = getRotationFromVector(intersection.direction)
             self.intersections.append(Intersection(position, intersection.type, glm.vec3(0, rotation, 0)))
 
         self.buildingRenderer.updateInstances(self.buildings)

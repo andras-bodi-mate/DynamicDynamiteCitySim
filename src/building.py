@@ -36,7 +36,7 @@ class Building:
     rotation: glm.vec3
 
     def updateCondition(self, newCondition):
-        self.data.condition = min(max(0, newCondition), 10)
+        self.data.condition = min(max(0.0, newCondition), 100.0)
 
 class BuildingRenderer:
     def __init__(self):

@@ -169,10 +169,10 @@ class UI:
         averageResidentHappiness, averageBuildingCondition = city.calculateStatistics()
 
         averageResidentHappinessText = f"Lakosok átlag boldogsága: {
-            "%.2f" % averageResidentHappiness if averageResidentHappiness != None else "Nincsenek lakosok"
+            "%.2f" % averageResidentHappiness + " %" if averageResidentHappiness != None else "Nincsenek lakosok"
         }"
         averageBuildingConditionText = f"Épületeg átlag állapota: {
-            "%.2f" % averageBuildingCondition if averageBuildingCondition != None else "Nincsenek épületek"
+            "%.2f" % averageBuildingCondition + " %" if averageBuildingCondition != None else "Nincsenek épületek"
         }"
 
         self.mainWindow.statisticsPopup.averageResidentHappinessLabel.setText(averageResidentHappinessText)

@@ -21,4 +21,4 @@ class Resident:
     happiness: int
 
     def updateHappiness(self, newHappiness):
-        self.happiness = min(max(0, newHappiness), 100)
+        self.happiness = min(max(0.0, newHappiness), 100.0)
