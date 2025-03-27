@@ -4,9 +4,8 @@
 -pénz és adó
 -házak állapota és kattintásra legördülően a lakosok tulajdonságai
 )
-3. Az épületek manuális hozzáadásánál olyan id-t válasszon ami még nem foglalt és lakosokat is adjon hozzá 
-4. A városgenerálásnál valamiért több száz utat tesz egy út helyére ami nem túl jó
-5. Katasztrófák!
+3. A városgenerálásnál valamiért több száz utat tesz egy út helyére ami nem túl jó
+4. Katasztrófák!
 @vascsakvince 
 1. Azz accessbe légysz add hozzá a fejlesztéseket és kösd össze a megfelelő táblákkal.
 2. Az excel kimutatásokat én rádbíznám de erről még tárgyalhatunk holnap.

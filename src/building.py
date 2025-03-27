@@ -38,6 +38,9 @@ class Building:
     def updateCondition(self, newCondition):
         self.data.condition = min(max(0.0, newCondition), 100.0)
 
+    def getNewID(buildings):
+        return max([building.data.id for building in buildings]) + 1 if len(buildings) != 0 else 0
+
 class BuildingRenderer:
     def __init__(self):
         self.mesh = Mesh("res\\models\\house.obj", "shaders\\instanceVertexShader.glsl", "shaders\\fragmentShader.glsl",

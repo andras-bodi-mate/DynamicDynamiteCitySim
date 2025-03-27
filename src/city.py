@@ -8,12 +8,12 @@ from random import randint, random
 from building import Building, BuildingType, BuildingData, BuildingRenderer
 from street import Street, StreetRenderer
 from intersection import Intersection
-from resident import Resident
+from resident import Resident, Occupation
 from service import Service
 from cityGenerator import CityGenerator
 from importer import Importer
 from exporter import Exporter
-from utilities import getRotationFromVector
+from utilities import getRotationFromVector, normalisedRandom
 
 class City:
     def __init__(self):
@@ -42,9 +42,13 @@ class City:
 
         rotation = getRotationFromVector(newBuilding.direction) + 90.0
         if buildingData == None:
-            buildingData = BuildingData(0, "Új épület", BuildingType.Residential, self.date, 750, 100)
-        buildingPosition += 2 * glm.vec3(newBuilding.direction.x, 0.0, newBuilding.direction.y)
-        buildingPosition += 1.0 * (glm.vec3(random(), 0.0, random()) - glm.vec3(0.5, 0.0, 0.5))
+            buildingID = Building.getNewID(self.buildings)
+            buildingData = BuildingData(buildingID, "Új épület", BuildingType.Residential, self.date, 750, 100)
+            for _ in range(2):
+                self.residents.append(Resident(Service.getNewID(self.services), "Új lakos", self.date, Occupation.No, buildingID, 100.0))
+        
+        buildingPosition += (1.0 + 0.4 * normalisedRandom()) * glm.vec3(newBuilding.direction.x, 0.0, newBuilding.direction.y)
+        buildingPosition += 1.25 * normalisedRandom() * glm.vec3(-newBuilding.direction.y, 0.0, newBuilding.direction.x)
 
         self.buildings.append(Building(buildingData, buildingPosition, glm.vec3(0.0, rotation, 0.0)))
 
@@ -63,6 +67,9 @@ class City:
 
     def importFilesAndConstruct(self):
         self.importer.openAndImportFiles()
+        self.buildings.clear()
+        self.residents.clear()
+        self.services.clear()
         for buildingData in self.importer.buildingData:
             self.constructBuilding(buildingData)
         

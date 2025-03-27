@@ -13,3 +13,6 @@ class Service:
     name: str
     type: ServiceType
     affectedBuildings: list[int]
+
+    def getNewID(services):
+        return max([service.id for service in services]) + 1 if len(services) != 0 else 0

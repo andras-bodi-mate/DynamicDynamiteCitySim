@@ -30,7 +30,8 @@ class Importer:
         "Irodai dolgozó": Occupation.OfficeWorker,
         "Tanár": Occupation.Teacher,
         "Tűzoltó": Occupation.FireFighter,
-        "Nyugdíjas": Occupation.Retired
+        "Nyugdíjas": Occupation.Retired,
+        "Polgármester": Occupation.Mayor
     }
 
     serviceTypes = {
