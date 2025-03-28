@@ -32,7 +32,17 @@
     ```cmd
     poetry install
     ```
+    Amennyiben ez nem működik manuálisan töltsd le a szükséges függőségeket.
 
 ## A program futtatása:
 
 Indítsd el a programot a ***"build"*** mappában található ***"start.bat"*** fájllal vagy a ***"src"*** mappában lévő ***"main.py"*** python fájl futtatásával.
+
+## A program működése
+1. **Adatok importálsa**
+A programba ha meglévő várost szeretnél importálni akkor válaszd ki az adatok importálása gombot. Majd add meg a szükséges fájlokat
+2. **A program irányítása**
+A program irányításához használd a **'W','A','S','D'** gombokat a billentyűzeten körültekintéshez pedig az egeret használd.
+A programon belül található gombok eléréséhez először a **'esc'** gombal érd el az egeret majd kattints a megfelelő gombra.
+3. **A program kimenetele**
+A program kimeneetelét minden hónapváltás után a projekt out mappájáan találod.
