@@ -17,8 +17,8 @@ class Project:
     startDate: date
     endDate: date
 
-    isActive = False
-    monthlyCost: float = field(init = False)
+    isActive: bool = field(default = False, init = False)
+    monthlyCost: float = field(default = 0.0, init = False)
 
     def __post_init__(self):
         self.monthlyCost = self.cost / relativedelta(self.endDate, self.startDate).months

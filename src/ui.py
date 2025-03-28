@@ -82,11 +82,20 @@ class StatisticsPopup(qtw.QDialog):
         layout = qtw.QVBoxLayout()
         self.averageResidentHappinessLabel = qtw.QLabel()
         self.averageBuildingConditionLabel = qtw.QLabel()
+        self.numBuildingsLabel = qtw.QLabel()
+        self.numResidentsLabel = qtw.QLabel()
+        self.numServicesText = qtw.QLabel()
+        self.numProjectsText = qtw.QLabel()
+
         layout.addWidget(self.averageResidentHappinessLabel)
         layout.addWidget(self.averageBuildingConditionLabel)
+        layout.addWidget(self.numBuildingsLabel)
+        layout.addWidget(self.numResidentsLabel)
+        layout.addWidget(self.numServicesText)
+        layout.addWidget(self.numProjectsText)
         layout.addWidget(self.closeButton)
+
         self.setLayout(layout)
-        self.setFixedHeight(200)
         self.setWindowFlag(qtc.Qt.WindowType.FramelessWindowHint)
 
 class StartingConditionsInputDialog(qtw.QDialog):
@@ -201,7 +210,7 @@ class MainWindow(qtw.QMainWindow):
         self.isOpen = False
 
     def updateLabels(self, city: City):
-        date = city.date
+        date = city.currentDate
         budget = city.availableBudget
         averageHappiness = sum([resident.happiness for resident in city.residents]) / len(city.residents) if len(city.residents) != 0 else None
 
@@ -254,9 +263,25 @@ class UI:
         averageBuildingConditionText = f"Épületeg átlag állapota: {
             "%.2f" % averageBuildingCondition + " %" if averageBuildingCondition != None else "Nincsenek épületek"
         }"
+        numResidentsText = f"Lakosok száma: {
+            len(city.residents)
+        }"
+        numBuildingsText = f"Épületek száma: {
+            len(city.buildings)
+        }"
+        numServicesText = f"Szolgáltatások száma: {
+            len(city.services)
+        }"
+        numProjectsText = f"Városfejlesztési projektek száma: {
+            len(city.projects)
+        }"
 
         self.mainWindow.statisticsPopup.averageResidentHappinessLabel.setText(averageResidentHappinessText)
         self.mainWindow.statisticsPopup.averageBuildingConditionLabel.setText(averageBuildingConditionText)
+        self.mainWindow.statisticsPopup.numBuildingsLabel.setText(numBuildingsText)
+        self.mainWindow.statisticsPopup.numResidentsLabel.setText(numResidentsText)
+        self.mainWindow.statisticsPopup.numServicesText.setText(numServicesText)
+        self.mainWindow.statisticsPopup.numProjectsText.setText(numProjectsText)
 
         self.mainWindow.statisticsPopup.exec()
 
@@ -265,5 +290,5 @@ class UI:
         if inputDialog.exec():
             startingBudget, startDate, endDate = inputDialog.getInputs()
             city.availableBudget = startingBudget
-            city.date = date(startDate.year(), startDate.month(), startDate.day())
+            city.currentDate = date(startDate.year(), startDate.month(), startDate.day())
             city.endDate = date(endDate.year(), endDate.month(), endDate.day())
