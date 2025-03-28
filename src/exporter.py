@@ -3,6 +3,7 @@ import csv
 from building import Building
 from resident import Resident
 from service import Service
+from project import Project
 from importer import Importer
 from utilities import getPath
 
@@ -10,6 +11,7 @@ class Exporter:
     buildingTypes = {}
     occupationTypes = {}
     serviceTypes = {}
+    projectTypes = {}
 
     def __init__(self):
         for key, value in Importer.buildingTypes.items():
@@ -20,6 +22,9 @@ class Exporter:
 
         for key, value in Importer.serviceTypes.items():
             Exporter.serviceTypes[value] = key
+
+        for key, value in Importer.projectTypes.items():
+            Exporter.projectTypes[value] = key
 
         self.outputFile = open(getPath("out\\output.txt"), "w")
 
@@ -57,5 +62,16 @@ class Exporter:
             writer.writerows([(service.id,
                                 service.name,
                                 Exporter.serviceTypes[service.type],
-                                service.affectedBuildings)
+                                service.affectedBuilding)
             for service in services])
+
+    def exportProjects(self, projects: list[Project], projectPath):
+        with open(getPath(projectPath), "w") as file:
+            writer = self.getWriter(file)
+            writer.writerows([(project.id,
+                                project.description,
+                                #Exporter.projectTypes[project.type],
+                                project.cost,
+                                project.startDate,
+                                project.endDate)
+            for project in projects])

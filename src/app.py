@@ -34,6 +34,12 @@ class App:
         self.window.ui.mainWindow.statisticsPopup.closeButton.clicked.connect(
             lambda: self.window.ui.mainWindow.statisticsPopup.close()
         )
+        self.window.ui.mainWindow.newProjectDialogButton.clicked.connect(
+            lambda: self.window.ui.addNewProject(self.scene.city)
+        )
+        self.window.ui.mainWindow.newServiceDialogButton.clicked.connect(
+            lambda: self.window.ui.addNewService(self.scene.city)
+        )
 
     def close(self):
         self.isRunning = False

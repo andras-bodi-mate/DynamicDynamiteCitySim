@@ -9,8 +9,8 @@ from building import Building, BuildingType, BuildingData, BuildingRenderer
 from street import Street, StreetRenderer
 from intersection import Intersection
 from resident import Resident, Occupation
-from service import Service
-from project import Project
+from service import Service, ServiceType
+from project import Project, ProjectType
 from disaster import Disaster
 from cityGenerator import CityGenerator
 from importer import Importer
@@ -44,7 +44,7 @@ class City:
         self.endDate: date = None
         self.availableBudget: float = None
         self.hasBeenConfigured = False
-        self.tax = 0.5
+        self.minimumHappiness: float = None
 
         self.cityGenerator.generate()
         self.numBuildings = 0
@@ -96,6 +96,7 @@ class City:
         self.exporter.exportBuildings(self.buildings, "out\\Épületek.csv")
         self.exporter.exportResidents(self.residents, "out\\Lakosok.csv")
         self.exporter.exportServices(self.services, "out\\Szolgáltatások.csv")
+        self.exporter.exportProjects(self.projects, "out\\VárosfejlesztésiProjektek.csv")
 
     def updateResidents(self):
         numServices = len(self.services)
@@ -104,7 +105,7 @@ class City:
                 if resident.residence == building.data.id:
                        residenceCondition = building.data.condition
             
-            newHappiness = int((resident.happiness/2) + (max((residenceCondition/2) - 10, 0)) + min(numServices, 10) + (10 - (self.tax * 10)))
+            newHappiness = resident.happiness - 5 #int((resident.happiness/2) + (max((residenceCondition/2) - 10, 0)) + min(numServices, 10) + (10 - (self.tax * 10)))
             resident.updateHappiness(newHappiness)
     
     def updateBuildings(self):
@@ -122,12 +123,38 @@ class City:
     def updateProjects(self):
         for project in self.projects:
             if self.currentDate >= project.startDate and self.currentDate <= project.endDate:
-                project.isActive = True
+                if not project.isActive:
+                    print(f"Új projekt kezdődött el: {project.description}")
+                    project.isActive = True
             else:
-                project.isActive = False
+                if project.isActive:
+                    print(f"Befefejeződött egy projekt: {project.description}")
+                    project.isActive = False
+                
+                if project.type == ProjectType.ImprovesBuildingConditions:
+                    for building in self.buildings:
+                        building.updateCondition(building.data.condition + 50.0)
+
+                elif project.type == ProjectType.IncreasesResidentHappiness:
+                    for resident in self.residents:
+                        resident.updateHappiness(resident.happiness + 50.0)
+                else:
+                    for building in self.buildings:
+                        building.updateCondition(building.data.condition + 50.0)
+                    for resident in self.residents:
+                        resident.updateHappiness(resident.happiness + 50.0)
+
 
             if project.isActive:
                 self.availableBudget -= project.monthlyCost
+
+    def updateServices(self):
+        for service in self.services:
+            if service.newService == False:
+                print(f"Egy új szolgáltatás jelent meg: {service.name}")
+                service.newService = True
+                for resident in self.residents:
+                    resident.updateHappiness(resident.happiness + 30)
 
     def checkDisasters(self):
         for disaster in Disaster.getDisasters(self.disasters):
@@ -145,7 +172,10 @@ class City:
         self.updateResidents()
         self.checkDisasters()
         self.exportAllData()
-        return self.currentDate < self.endDate
+        
+        if len(self.residents) != 0 and sum([resident.happiness for resident in self.residents]) / len(self.residents) < self.minimumHappiness:
+            return False
+        return self.currentDate < self.endDate or self.availableBudget >= 0.0
 
     def calculateStatistics(self):
         if len(self.residents) != 0:
