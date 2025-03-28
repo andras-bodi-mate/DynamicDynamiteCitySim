@@ -10,6 +10,7 @@ from street import Street, StreetRenderer
 from intersection import Intersection
 from resident import Resident, Occupation
 from service import Service
+from project import Project
 from cityGenerator import CityGenerator
 from importer import Importer
 from exporter import Exporter
@@ -23,6 +24,7 @@ class City:
         self.intersections: list[Intersection] = []
         self.residents: list[Resident] = []
         self.services: list[Service] = []
+        self.projects: list[Project] = []
 
         self.cityGenerator = CityGenerator()
         self.importer = Importer()
@@ -30,7 +32,10 @@ class City:
         self.streetRenderer = StreetRenderer()
         self.buildingRenderer = BuildingRenderer()
 
-        self.date = date.today()
+        self.date: date = None
+        self.endDate: date = None
+        self.availableBudget: float = None
+        self.hasBeenConfigured = False
         self.tax = 0.5
 
         self.cityGenerator.generate()
@@ -111,6 +116,7 @@ class City:
         self.updateBuildings()
         self.updateResidents()
         self.exportAllData()
+        return self.date < self.endDate
 
     def calculateStatistics(self):
         if len(self.residents) != 0:

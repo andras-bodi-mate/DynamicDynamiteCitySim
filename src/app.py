@@ -9,6 +9,7 @@ from scene import Scene
 class App:
     def __init__(self):
         self.isRunning = True
+        self.didRender = False
 
         self.deltaTimeClock = qtc.QElapsedTimer()
 
@@ -38,7 +39,11 @@ class App:
         self.isRunning = False
 
     def gameTick(self):
-        #self.scene.city.constructBuilding()
+        self.window.ui.mainWindow.updateLabels(self.scene.city)
+        if not self.scene.city.hasBeenConfigured and self.didRender:
+            self.window.ui.openStartingConfigurationPopup(self.scene.city)
+            self.scene.city.hasBeenConfigured = True
+        
         self.scene.gameTick(self.deltaTime)
     
     def processEvents(self):
@@ -78,10 +83,10 @@ class App:
         self.camera.processMovementInput(self.inputHandler, self.deltaTime)
 
     def updateToNextMonth(self):
-        self.scene.city.updateToNextMonth()
+        if not self.scene.city.updateToNextMonth():
+            self.close()
 
     def render(self):
-        self.window.ui.mainWindow.updateDateLabel(str(self.scene.city.date))
         self.camera.calculateViewMatrix()
         self.camera.updateUniforms(self.scene.city.buildingRenderer.mesh.shaderProgram)
         self.camera.updateUniforms(self.scene.city.streetRenderer.mesh.shaderProgram)
@@ -93,3 +98,5 @@ class App:
         self.window.glContext.clear(0.0, 0.0, 0.0)
         self.scene.render()
         self.window.ui.mainWindow.viewport.swapBuffers()
+
+        self.didRender = True

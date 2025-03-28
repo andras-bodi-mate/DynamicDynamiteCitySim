@@ -21,6 +21,12 @@ class Exporter:
         for key, value in Importer.serviceTypes.items():
             Exporter.serviceTypes[value] = key
 
+        self.outputFile = open(getPath("out\\output.txt"), "w")
+
+    def log(self, *args):
+        for arg in args:
+            self.outputFile.write(str(arg))
+
     def getWriter(self, file):
         return csv.writer(file, quotechar = '"', quoting = csv.QUOTE_NONNUMERIC, lineterminator = '\n')
 
