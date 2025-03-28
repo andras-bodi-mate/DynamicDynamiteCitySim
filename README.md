@@ -52,6 +52,9 @@
     ```
     Amennyiben ez nem működik manuálisan töltsd le a szükséges függőségeket.
 
+5. **Python Tk áthelyezése**:
+    Lehetséges hogy a python könyvtárból a (például C:\\User\\Appdata\\Local\\Programs\\Python\\Python313\\) **tcl** nevű mappából azokat az almappákat át kell másolni a **Lib** mappába amiknek a nevükben szerepel a **Tk** vagy **Tc**.
+
 ## A program futtatása:
 
 Indítsd el a programot a ***"build"*** mappában található ***"start.bat"*** fájllal vagy a ***"src"*** mappában lévő ***"main.py"*** python fájl futtatásával.
@@ -60,7 +63,6 @@ Indítsd el a programot a ***"build"*** mappában található ***"start.bat"*** 
 1. **Adatok importálsa**
 A programba ha meglévő várost szeretnél importálni akkor válaszd ki az adatok importálása gombot. Majd add meg a szükséges fájlokat
 2. **A program irányítása**
-A program irányításához használd a **'W','A','S','D'** gombokat a billentyűzeten körültekintéshez pedig az egeret használd.
-A programon belül található gombok eléréséhez először a **'esc'** gombal érd el az egeret majd kattints a megfelelő gombra.
+A város vizualizációját a nézetablakba kattintva lehet irányítani a **'W','A','S','D'** billentyűket használva. A körültekintéshez pedig az egeret használd. A programon belül található gombok eléréséhez először a **'esc'** gombal érd el az egeret majd kattints a megfelelő gombra. 
 3. **A program kimenetele**
 A program kimenetelét minden hónapváltás után a projekt out mappájában találod.
