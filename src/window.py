@@ -5,7 +5,11 @@ import PyQt6.QtGui as qtg
 import glm
 
 from utilities import getPath
+from loadingScreen import LoadingScreen
+from shader import onShaderLoad
 from ui import UI
+
+from time import sleep
 
 class Window:
     def __init__(self):
@@ -15,6 +19,9 @@ class Window:
         screenSize = primaryScreen.size()
         pixelRatio = primaryScreen.devicePixelRatio()
         self.size = glm.ivec2(screenSize.width() * pixelRatio, screenSize.height() * pixelRatio)
+
+        self.loadingScreen = LoadingScreen(4, self.ui.mainWindow.viewport)
+        onShaderLoad.connect(self.loadingScreen.increment)
     
     def close(self):
         self.ui.close()

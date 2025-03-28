@@ -10,6 +10,8 @@ from street import Street, StreetRenderer
 from intersection import Intersection
 from resident import Resident, Occupation
 from service import Service
+from project import Project
+from disaster import Disaster
 from cityGenerator import CityGenerator
 from importer import Importer
 from exporter import Exporter
@@ -23,6 +25,14 @@ class City:
         self.intersections: list[Intersection] = []
         self.residents: list[Resident] = []
         self.services: list[Service] = []
+        self.projects: list[Project] = []
+        self.disasters: list[Disaster] = [
+            Disaster("Járvány", 0.01, -30, 0),
+            Disaster("Árvíz", 0.03, -20, -30),
+            Disaster("Tornádó", 0.02, -30, -30),
+            Disaster("Tűzvész", 0.03, -20, -40),
+            Disaster("Hurrikán", 0.015, -20, -25)
+        ]
 
         self.cityGenerator = CityGenerator()
         self.importer = Importer()
@@ -30,7 +40,10 @@ class City:
         self.streetRenderer = StreetRenderer()
         self.buildingRenderer = BuildingRenderer()
 
-        self.date = date.today()
+        self.currentDate: date = None
+        self.endDate: date = None
+        self.availableBudget: float = None
+        self.hasBeenConfigured = False
         self.tax = 0.5
 
         self.cityGenerator.generate()
@@ -43,9 +56,9 @@ class City:
         rotation = getRotationFromVector(newBuilding.direction) + 90.0
         if buildingData == None:
             buildingID = Building.getNewID(self.buildings)
-            buildingData = BuildingData(buildingID, "Új épület", BuildingType.Residential, self.date, 750, 100)
+            buildingData = BuildingData(buildingID, "Új épület", BuildingType.Residential, self.currentDate, 750, 100)
             for _ in range(2):
-                self.residents.append(Resident(Service.getNewID(self.services), "Új lakos", self.date, Occupation.No, buildingID, 100.0))
+                self.residents.append(Resident(Service.getNewID(self.services), "Új lakos", self.currentDate, Occupation.No, buildingID, 100.0))
         
         buildingPosition += (1.0 + 0.4 * normalisedRandom()) * glm.vec3(newBuilding.direction.x, 0.0, newBuilding.direction.y)
         buildingPosition += 1.25 * normalisedRandom() * glm.vec3(-newBuilding.direction.y, 0.0, newBuilding.direction.x)
@@ -106,11 +119,33 @@ class City:
 
             building.updateCondition(buildingNewCondition)
 
+    def updateProjects(self):
+        for project in self.projects:
+            if self.currentDate >= project.startDate and self.currentDate <= project.endDate:
+                project.isActive = True
+            else:
+                project.isActive = False
+
+            if project.isActive:
+                self.availableBudget -= project.monthlyCost
+
+    def checkDisasters(self):
+        for disaster in Disaster.getDisasters(self.disasters):
+            print(disaster.getNewsHeadline())
+            for resident in self.residents:
+                resident.updateHappiness(resident.happiness + disaster.residentHappinessChange)
+            
+            for building in self.buildings:
+                building.updateCondition(building.data.condition + disaster.buildingConditionChange)
+
     def updateToNextMonth(self):
-        self.date += relativedelta(months = 1)
+        self.currentDate += relativedelta(months = 1)
+        self.updateProjects()
         self.updateBuildings()
         self.updateResidents()
+        self.checkDisasters()
         self.exportAllData()
+        return self.currentDate < self.endDate
 
     def calculateStatistics(self):
         if len(self.residents) != 0:

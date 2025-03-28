@@ -7,7 +7,7 @@ from inputHandler import InputHandler
 class Camera:
     def __init__(self, window, FOV, nearClip = 0.5, farClip = 1000.0):
         self.window = window
-        self.position = glm.vec3(0.0, 0.0, 5.0)  # Start position
+        self.position = glm.vec3(0.0, 3.0, 10.0)  # Start position
         self.front = glm.vec3(0.0, 0.0, -1.0)  # Looking towards -Z
         self.up = glm.vec3(0.0, 1.0, 0.0)  # Y-axis is up
         self.yaw, self.pitch = -90.0, 0.0  # Camera rotation
