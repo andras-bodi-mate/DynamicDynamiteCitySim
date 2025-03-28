@@ -11,6 +11,7 @@ from intersection import Intersection
 from resident import Resident, Occupation
 from service import Service
 from project import Project
+from disaster import Disaster
 from cityGenerator import CityGenerator
 from importer import Importer
 from exporter import Exporter
@@ -25,6 +26,13 @@ class City:
         self.residents: list[Resident] = []
         self.services: list[Service] = []
         self.projects: list[Project] = []
+        self.disasters: list[Disaster] = [
+            Disaster("Járvány", 0.01, -30, 0),
+            Disaster("Árvíz", 0.03, -20, -30),
+            Disaster("Tornádó", 0.02, -30, -30),
+            Disaster("Tűzvész", 0.03, -20, -40),
+            Disaster("Hurrikán", 0.015, -20, -25)
+        ]
 
         self.cityGenerator = CityGenerator()
         self.importer = Importer()
@@ -111,10 +119,20 @@ class City:
 
             building.updateCondition(buildingNewCondition)
 
+    def checkDisasters(self):
+        for disaster in Disaster.getDisasters(self.disasters):
+            print(disaster.getNewsHeadline())
+            for resident in self.residents:
+                resident.updateHappiness(resident.happiness + disaster.residentHappinessChange)
+            
+            for building in self.buildings:
+                building.updateCondition(building.data.condition + disaster.buildingConditionChange)
+
     def updateToNextMonth(self):
         self.date += relativedelta(months = 1)
         self.updateBuildings()
         self.updateResidents()
+        self.checkDisasters()
         self.exportAllData()
         return self.date < self.endDate
 

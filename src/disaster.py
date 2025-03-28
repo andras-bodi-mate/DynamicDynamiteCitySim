@@ -1,25 +1,21 @@
 from dataclasses import dataclass
 from random import random
 
-from city import City
-
 @dataclass
 class Disaster:
+    description: str
     probability: float
     residentHappinessChange: float
     buildingConditionChange: float
 
-    def happen(self, city: City):
-        for resident in city.residents:
-            resident.updateHappiness(resident.updateHappiness + self.residentHappinessChange)
-        
-        for building in city.buildings:
-            building.updateCondition(building.data.condition + self.buildingConditionChange)
-
-    def getDisaster(disasters):
+    def getDisasters(disasters):
         for disaster in disasters:
             if random() < disaster.probability:
                 yield disaster
+
+    def getNewsHeadline(self):
+        return (f"Katasztrófa: {self.description}! {self.residentHappinessChange}% boldogság" +
+        (f", {self.buildingConditionChange}% épületek állapota" if self.buildingConditionChange != 0 else ""))
 
 
 #minden épület -10 condition
