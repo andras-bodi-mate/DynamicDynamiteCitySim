@@ -1,6 +1,6 @@
 # Csapatunk adatai:
 ## Csapatnév: 
-* DynamicDynamite\
+* DynamicDynamite
 ## Csapattagok:
 * Bódi-Máté András
 * Szörényi Zalán András
