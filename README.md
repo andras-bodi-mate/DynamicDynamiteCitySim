@@ -1,3 +1,21 @@
+# Csapatunk adatai:
+## Csapatnév: 
+* DynamicDynamite\
+## Csapattagok:
+* Bódi-Máté András
+* Szörényi Zalán András
+* Vascsák Vince
+## Iskola:
+* Földes Ferenc Gimnázium
+## Felkészítő tanár:
+* Takács Imre
+## Elérhetőség:
+* bodimate.andras@gmail.com
+* vascsakvince@gmail.com
+# Szoftware
+* Visual Studio Code(legújabb verzió)
+* Python 3.13. 
+
 # DynamicDynamiteCitySim
 
 ## Környezet beállítása:
@@ -45,4 +63,4 @@ A programba ha meglévő várost szeretnél importálni akkor válaszd ki az ada
 A program irányításához használd a **'W','A','S','D'** gombokat a billentyűzeten körültekintéshez pedig az egeret használd.
 A programon belül található gombok eléréséhez először a **'esc'** gombal érd el az egeret majd kattints a megfelelő gombra.
 3. **A program kimenetele**
-A program kimeneetelét minden hónapváltás után a projekt out mappájáan találod.
+A program kimenetelét minden hónapváltás után a projekt out mappájáan találod.
