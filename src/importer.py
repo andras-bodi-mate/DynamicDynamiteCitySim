@@ -107,7 +107,7 @@ class Importer:
             constructionYear = int(constructionYear)
             usableArea = float(usableArea)
 
-            self.buildingData.append(BuildingData(id, description, buildingType, constructionYear, usableArea,100))
+            self.buildingData.append(BuildingData(id, description, buildingType, constructionYear, usableArea))
 
     def importResidents(self, fileName):
         for row in self.extractRowsFromFile(fileName):
@@ -117,7 +117,7 @@ class Importer:
             occupation = Importer.occupationTypes[self.importedOccupationTypes[occupation.strip()]]
             residence = int(residence)
 
-            self.residentData.append(Resident(id, name, birthYear, occupation, residence, 100))
+            self.residentData.append(Resident(id, name, birthYear, occupation, residence))
 
     def importServices(self, fileName):
         for row in self.extractRowsFromFile(fileName):

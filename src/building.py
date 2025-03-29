@@ -26,7 +26,6 @@ class BuildingData:
     type: BuildingType
     constructionYear: int
     usableArea: float
-    condition: int
 
 @dataclass
 class Building:
@@ -34,9 +33,6 @@ class Building:
 
     position: glm.vec3
     rotation: glm.vec3
-
-    def updateCondition(self, newCondition):
-        self.data.condition = min(max(0.0, newCondition), 100.0)
 
     def getNewID(buildings):
         return max([building.data.id for building in buildings]) + 1 if len(buildings) != 0 else 0

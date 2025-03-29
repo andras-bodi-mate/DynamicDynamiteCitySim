@@ -89,7 +89,7 @@ class App:
         self.camera.processMovementInput(self.inputHandler, self.deltaTime)
 
     def updateToNextMonth(self):
-        if not self.scene.city.updateToNextMonth():
+        if self.scene.city.updateToNextMonth():
             self.close()
 
     def render(self):

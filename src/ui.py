@@ -82,15 +82,15 @@ class StatisticsPopup(qtw.QDialog):
         super().__init__()
         self.closeButton = Button("Close")
         layout = qtw.QVBoxLayout()
-        self.averageResidentHappinessLabel = qtw.QLabel()
-        self.averageBuildingConditionLabel = qtw.QLabel()
+        self.residentHappinessLabel = qtw.QLabel()
+        self.buildingConditionLabel = qtw.QLabel()
         self.numBuildingsLabel = qtw.QLabel()
         self.numResidentsLabel = qtw.QLabel()
         self.numServicesText = qtw.QLabel()
         self.numProjectsText = qtw.QLabel()
 
-        layout.addWidget(self.averageResidentHappinessLabel)
-        layout.addWidget(self.averageBuildingConditionLabel)
+        layout.addWidget(self.residentHappinessLabel)
+        layout.addWidget(self.buildingConditionLabel)
         layout.addWidget(self.numBuildingsLabel)
         layout.addWidget(self.numResidentsLabel)
         layout.addWidget(self.numServicesText)
@@ -282,16 +282,16 @@ class MainWindow(qtw.QMainWindow):
 
         self.dateLabel = qtw.QLabel("")
         self.availableBudgetLabel = qtw.QLabel("")
-        self.averageResidentHappinessLabel = qtw.QLabel("")
+        self.residentHappinessLabel = qtw.QLabel("")
 
         self.dateLabel.setAlignment(qtc.Qt.AlignmentFlag.AlignHCenter)
         self.availableBudgetLabel.setAlignment(qtc.Qt.AlignmentFlag.AlignHCenter)
-        self.averageResidentHappinessLabel.setAlignment(qtc.Qt.AlignmentFlag.AlignHCenter)
+        self.residentHappinessLabel.setAlignment(qtc.Qt.AlignmentFlag.AlignHCenter)
 
         bottomInformationPanelLayout = qtw.QHBoxLayout()
         bottomInformationPanelLayout.addWidget(self.availableBudgetLabel)
         bottomInformationPanelLayout.addWidget(self.dateLabel)
-        bottomInformationPanelLayout.addWidget(self.averageResidentHappinessLabel)
+        bottomInformationPanelLayout.addWidget(self.residentHappinessLabel)
 
         bottomInformationPanel = qtw.QWidget()
         bottomInformationPanel.setLayout(bottomInformationPanelLayout)
@@ -325,7 +325,6 @@ class MainWindow(qtw.QMainWindow):
     def updateLabels(self, city: City):
         date = city.currentDate
         budget = city.availableBudget
-        averageHappiness = sum([resident.happiness for resident in city.residents]) / len(city.residents) if len(city.residents) != 0 else None
 
         if date != None:
             self.dateLabel.setText(str(date))
@@ -337,10 +336,10 @@ class MainWindow(qtw.QMainWindow):
         else:
             self.availableBudgetLabel.setText("Nincs megadva pénzkeret")
 
-        if averageHappiness != None:
-            self.averageResidentHappinessLabel.setText(f"Lakosok átlag boldogsága: {averageHappiness:.2f} %")
+        if city.residentHappiness != None:
+            self.residentHappinessLabel.setText(f"Lakosok átlag boldogsága: {city.residentHappiness:.2f} %")
         else:
-            self.averageResidentHappinessLabel.setText("Nincsenek lakosok")
+            self.residentHappinessLabel.setText("Nincsenek lakosok")
 
 class UI:
     def __init__(self):
@@ -368,13 +367,13 @@ class UI:
         self.isOpen = self.mainWindow.isOpen
 
     def openStatisticsPopup(self, city: City):
-        averageResidentHappiness, averageBuildingCondition = city.calculateStatistics()
+        residentHappiness, buildingCondition = city.residentHappiness, city.buildingsCondition
 
-        averageResidentHappinessText = f"Lakosok átlag boldogsága: {
-            "%.2f" % averageResidentHappiness + " %" if averageResidentHappiness != None else "Nincsenek lakosok"
+        residentHappinessText = f"Lakosok átlag boldogsága: {
+            "%.2f" % residentHappiness + " %" if residentHappiness != None else "Nincsenek lakosok"
         }"
-        averageBuildingConditionText = f"Épületeg átlag állapota: {
-            "%.2f" % averageBuildingCondition + " %" if averageBuildingCondition != None else "Nincsenek épületek"
+        buildingConditionText = f"Épületeg átlag állapota: {
+            "%.2f" % buildingCondition + " %" if buildingCondition != None else "Nincsenek épületek"
         }"
         numResidentsText = f"Lakosok száma: {
             len(city.residents)
@@ -389,8 +388,8 @@ class UI:
             len(city.projects)
         }"
 
-        self.mainWindow.statisticsPopup.averageResidentHappinessLabel.setText(averageResidentHappinessText)
-        self.mainWindow.statisticsPopup.averageBuildingConditionLabel.setText(averageBuildingConditionText)
+        self.mainWindow.statisticsPopup.residentHappinessLabel.setText(residentHappinessText)
+        self.mainWindow.statisticsPopup.buildingConditionLabel.setText(buildingConditionText)
         self.mainWindow.statisticsPopup.numBuildingsLabel.setText(numBuildingsText)
         self.mainWindow.statisticsPopup.numResidentsLabel.setText(numResidentsText)
         self.mainWindow.statisticsPopup.numServicesText.setText(numServicesText)

@@ -41,8 +41,7 @@ class Exporter:
             writer.writerows([(building.data.id,
                                 building.data.name,
                                 Exporter.buildingTypes[building.data.type],
-                                building.data.constructionYear,
-                                building.data.condition)
+                                building.data.constructionYear)
             for building in buildings])
 
     def exportResidents(self, residents: list[Resident], projectPath):
@@ -52,8 +51,7 @@ class Exporter:
                                 resident.name,
                                 resident.birthYear,
                                 Exporter.occupationTypes[resident.occupation],
-                                resident.residence,
-                                resident.happiness)
+                                resident.residence)
             for resident in residents])
 
     def exportServices(self, services: list[Service], projectPath):

@@ -45,6 +45,8 @@ class City:
         self.availableBudget: float = None
         self.hasBeenConfigured = False
         self.minimumHappiness: float = None
+        self.residentHappiness: float = None
+        self.buildingsCondition: float = None
 
         self.cityGenerator.generate()
         self.numBuildings = 0
@@ -56,9 +58,9 @@ class City:
         rotation = getRotationFromVector(newBuilding.direction) + 90.0
         if buildingData == None:
             buildingID = Building.getNewID(self.buildings)
-            buildingData = BuildingData(buildingID, "Új épület", BuildingType.Residential, self.currentDate, 750, 100)
+            buildingData = BuildingData(buildingID, "Új épület", BuildingType.Residential, self.currentDate, 750)
             for _ in range(2):
-                self.residents.append(Resident(Service.getNewID(self.services), "Új lakos", self.currentDate, Occupation.No, buildingID, 100.0))
+                self.residents.append(Resident(Service.getNewID(self.services), "Új lakos", self.currentDate, Occupation.No, buildingID))
         
         buildingPosition += (1.0 + 0.4 * normalisedRandom()) * glm.vec3(newBuilding.direction.x, 0.0, newBuilding.direction.y)
         buildingPosition += 1.25 * normalisedRandom() * glm.vec3(-newBuilding.direction.y, 0.0, newBuilding.direction.x)
@@ -74,6 +76,11 @@ class City:
             position = glm.vec3(intersection.pos.x*10, 0, intersection.pos.y*10)
             rotation = getRotationFromVector(intersection.direction)
             self.intersections.append(Intersection(position, intersection.type, glm.vec3(0, rotation, 0)))
+
+        if self.residentHappiness == None:
+            self.residentHappiness = 100.0
+        if self.buildingsCondition == None:
+            self.buildingsCondition = 100.0
 
         self.buildingRenderer.updateInstances(self.buildings)
         self.streetRenderer.updateInstances(self.streets)
@@ -99,27 +106,18 @@ class City:
         self.exporter.exportServices(self.services, "out\\Szolgáltatások.csv")
         self.exporter.exportProjects(self.projects, "out\\VárosfejlesztésiProjektek.csv")
 
+    def updateHappiness(self, newHappiness):
+        self.residentHappiness = min(max(0.0, newHappiness), 100.0)
+
+    def updateBuildingsCondition(self, newCondition):
+        self.buildingsCondition = min(max(0.0, newCondition), 100.0)
+
     def updateResidents(self):
-        numServices = len(self.services)
-        for resident in self.residents:
-            for building in self.buildings:
-                if resident.residence == building.data.id:
-                       residenceCondition = building.data.condition
-            
-            newHappiness = resident.happiness - 5 #int((resident.happiness/2) + (max((residenceCondition/2) - 10, 0)) + min(numServices, 10) + (10 - (self.tax * 10)))
-            resident.updateHappiness(newHappiness)
+        self.updateHappiness(self.residentHappiness - 2.5)
     
     def updateBuildings(self):
-        for building in self.buildings:
-            occupants = sum((True for resident in self.residents if resident.residence == building.data.id))
-
-            chance = randint(1, 10)
-            buildingNewCondition = building.data.condition - occupants
-
-            if (chance == 1):
-                buildingNewCondition -= 5
-
-            building.updateCondition(buildingNewCondition)
+        if (randint(1, 10) == 1):
+            self.updateBuildingsCondition(self.buildingsCondition - 2)
 
     def updateProjects(self):
         for project in self.projects:
@@ -133,18 +131,13 @@ class City:
                     project.isActive = False
                 
                 if project.type == ProjectType.ImprovesBuildingConditions:
-                    for building in self.buildings:
-                        building.updateCondition(building.data.condition + 50.0)
+                    self.updateBuildingsCondition(self.buildingsCondition + 50.0)
 
                 elif project.type == ProjectType.IncreasesResidentHappiness:
-                    for resident in self.residents:
-                        resident.updateHappiness(resident.happiness + 50.0)
+                    self.updateHappiness(self.residentHappiness + 50.0)
                 else:
-                    for building in self.buildings:
-                        building.updateCondition(building.data.condition + 50.0)
-                    for resident in self.residents:
-                        resident.updateHappiness(resident.happiness + 50.0)
-
+                    self.updateBuildingsCondition(self.buildingsCondition + 50.0)
+                    self.updateHappiness(self.residentHappiness + 50.0)
 
             if project.isActive:
                 self.availableBudget -= project.monthlyCost
@@ -154,17 +147,14 @@ class City:
             if service.newService == False:
                 print(f"Egy új szolgáltatás jelent meg: {service.name}")
                 service.newService = True
-                for resident in self.residents:
-                    resident.updateHappiness(resident.happiness + 30)
+                self.updateHappiness(self.residentHappiness + 30)
 
     def checkDisasters(self):
         for disaster in Disaster.getDisasters(self.disasters):
+            disaster: Disaster
             print(disaster.getNewsHeadline())
-            for resident in self.residents:
-                resident.updateHappiness(resident.happiness + disaster.residentHappinessChange)
-            
-            for building in self.buildings:
-                building.updateCondition(building.data.condition + disaster.buildingConditionChange)
+            self.updateHappiness(self.residentHappiness + disaster.residentHappinessChange)
+            self.updateBuildingsCondition(self.buildingsCondition + disaster.buildingConditionChange)
 
     def updateToNextMonth(self):
         self.currentDate += relativedelta(months = 1)
@@ -174,22 +164,9 @@ class City:
         self.checkDisasters()
         self.exportAllData()
         
-        if len(self.residents) != 0 and sum([resident.happiness for resident in self.residents]) / len(self.residents) < self.minimumHappiness:
-            return False
-        return self.currentDate < self.endDate or self.availableBudget >= 0.0
-
-    def calculateStatistics(self):
-        if len(self.residents) != 0:
-            averageResidentHappiness = sum(resident.happiness for resident in self.residents) / len(self.residents)
-        else:
-            averageResidentHappiness = None
-
-        if len(self.buildings) != 0:
-            averageBuildingCondition = sum(building.data.condition for building in self.buildings) / len(self.buildings)
-        else:
-            averageBuildingCondition = None
-
-        return averageResidentHappiness, averageBuildingCondition
+        return (self.residentHappiness < self.minimumHappiness or
+               self.currentDate > self.endDate or
+               self.availableBudget <= 0.0)
 
     def render(self):
         self.streetRenderer.render()

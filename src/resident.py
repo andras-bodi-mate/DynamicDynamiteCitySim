@@ -19,10 +19,6 @@ class Resident:
     birthYear: int
     occupation: Occupation
     residence: int
-    happiness: int
-
-    def updateHappiness(self, newHappiness):
-        self.happiness = min(max(0.0, newHappiness), 100.0)
-
+    
     def getNewID(residents):
         return max([resident.id for resident in residents]) + 1 if len(residents) != 0 else 0
