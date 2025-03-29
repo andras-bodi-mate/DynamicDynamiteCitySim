@@ -218,6 +218,10 @@ class CityGenerator:
     def getStreetRotations(self):
         return [0 if streetSegments.isHorizontal else 90 for streetSegments in self.streetSegments if streetSegments.isVisible]
 
+    def reset(self):
+        self.prevMaxDist = 0.0
+        self.numBuildings = 0
+
     def draw(self, buildings, streetSegments, intersections):
         minX = min([min(street.startPos.x, street.endPos.x) for street in self.streets])
         maxX = max([max(street.startPos.x, street.endPos.x) for street in self.streets])

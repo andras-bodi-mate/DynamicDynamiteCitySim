@@ -83,6 +83,7 @@ class City:
         self.buildings.clear()
         self.residents.clear()
         self.services.clear()
+        self.cityGenerator.reset()
         for buildingData in self.importer.buildingData:
             self.constructBuilding(buildingData)
         
