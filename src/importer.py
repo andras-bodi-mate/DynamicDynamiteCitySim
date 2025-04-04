@@ -75,7 +75,7 @@ class Importer:
         return date(year, month, day)
 
     def extractRowsFromFile(self, fileName):
-        with open(fileName, mode = 'r') as file:
+        with open(fileName, mode = 'r', encoding = "utf-8") as file:
             for row in csv.reader(file):
                 yield row
 

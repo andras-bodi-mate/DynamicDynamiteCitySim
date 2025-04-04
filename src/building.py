@@ -33,6 +33,7 @@ class Building:
 
     position: glm.vec3
     rotation: glm.vec3
+    isVisible: bool = field(default = True)
 
     def getNewID(buildings):
         return max([building.data.id for building in buildings]) + 1 if len(buildings) != 0 else 0
@@ -55,8 +56,8 @@ class BuildingRenderer:
         if len(buildings) == 0:
             return
 
-        instancePositions = [building.position for building in buildings]
-        instanceRotations = [building.rotation for building in buildings]
+        instancePositions = [building.position for building in buildings if building.isVisible]
+        instanceRotations = [building.rotation for building in buildings if building.isVisible]
         self.mesh.updateInstances(instancePositions, instanceRotations)
 
     def render(self):

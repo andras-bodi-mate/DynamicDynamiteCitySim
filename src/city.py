@@ -1,21 +1,40 @@
 import moderngl as gl
 import glm
+import PyQt6.QtCore as qtc
 
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from random import randint, random
+from random import randint
 
 from building import Building, BuildingType, BuildingData, BuildingRenderer
 from street import Street, StreetRenderer
-from intersection import Intersection
+from intersection import Intersection, IntersectionRenderer
 from resident import Resident, Occupation
 from service import Service, ServiceType
 from project import Project, ProjectType
 from disaster import Disaster
-from cityGenerator import CityGenerator
+from cityGenerator import CityGenerator, BuildingVisuals, StreetSegmentVisuals, IntersectionVisuals
 from importer import Importer
 from exporter import Exporter
 from utilities import getRotationFromVector, normalisedRandom
+
+class BuildingLimitReachedSignal(qtc.QObject):
+    triggered = qtc.pyqtSignal()
+    isConnected = False
+
+    def __init__(self):
+        super().__init__()
+
+    def emit(self):
+        self.triggered.emit()
+
+    def connect(self, slot):
+        self.triggered.connect(slot)
+        self.isConnected = True
+
+    def clear(self):
+        self.triggered.disconnect()
+        self.isConnected = False
 
 class City:
     def __init__(self):
@@ -38,6 +57,7 @@ class City:
         self.importer = Importer()
         self.exporter = Exporter()
         self.streetRenderer = StreetRenderer()
+        self.intersectionRenderer = IntersectionRenderer()
         self.buildingRenderer = BuildingRenderer()
 
         self.currentDate: date = None
@@ -48,19 +68,38 @@ class City:
         self.residentHappiness: float = None
         self.buildingsCondition: float = None
 
+        self.buildingLimitReached = BuildingLimitReachedSignal()
+
         self.cityGenerator.generate()
         self.numBuildings = 0
 
+    def generateNewBuildingData(self):
+        newBuildingID = Building.getNewID(self.buildings)
+        newBuildingData = BuildingData(newBuildingID, "Új épület", BuildingType.Residential, self.currentDate, 750)
+        newResidents = []
+        for _ in range(2):
+            newResidents.append(Resident(Service.getNewID(self.services), "Új lakos", self.currentDate, Occupation.No, newBuildingID))
+
+        return newBuildingData, newResidents
+        
+
     def constructBuilding(self, buildingData = None):
-        newBuilding, newStreetSegments, newIntersections = self.cityGenerator.constructNewBuilding()
+        self.numBuildings += 1
+
+        newData = self.cityGenerator.constructNewBuilding()
+        if newData == None:
+            buildingData, newResidents = self.generateNewBuildingData()
+            self.buildings.append(Building(buildingData, glm.ivec2(0), glm.ivec2(0), False))
+            self.residents.extend(newResidents)
+            return
+
+        newBuilding, newStreetSegments, newIntersections = newData
         buildingPosition = glm.vec3(10 * newBuilding.pos.x, 0, 10 * newBuilding.pos.y)
 
         rotation = getRotationFromVector(newBuilding.direction) + 90.0
         if buildingData == None:
-            buildingID = Building.getNewID(self.buildings)
-            buildingData = BuildingData(buildingID, "Új épület", BuildingType.Residential, self.currentDate, 750)
-            for _ in range(2):
-                self.residents.append(Resident(Service.getNewID(self.services), "Új lakos", self.currentDate, Occupation.No, buildingID))
+            buildingData, newResidents = self.generateNewBuildingData()
+            self.residents.extend(newResidents)
         
         buildingPosition += (1.0 + 0.4 * normalisedRandom()) * glm.vec3(newBuilding.direction.x, 0.0, newBuilding.direction.y)
         buildingPosition += 1.25 * normalisedRandom() * glm.vec3(-newBuilding.direction.y, 0.0, newBuilding.direction.x)
@@ -73,7 +112,7 @@ class City:
             self.streets.append(Street(position, glm.vec3(0, rotation, 0)))
         
         for intersection in newIntersections:
-            position = glm.vec3(intersection.pos.x*10, 0, intersection.pos.y*10)
+            position = glm.vec3(10 * intersection.pos.x, 0, 10 * intersection.pos.y)
             rotation = getRotationFromVector(intersection.direction)
             self.intersections.append(Intersection(position, intersection.type, glm.vec3(0, rotation, 0)))
 
@@ -82,8 +121,19 @@ class City:
         if self.buildingsCondition == None:
             self.buildingsCondition = 100.0
 
+        if self.residentHappiness == None:
+            self.residentHappiness = 100.0
+        if self.buildingsCondition == None:
+            self.buildingsCondition = 100.0
+
         self.buildingRenderer.updateInstances(self.buildings)
         self.streetRenderer.updateInstances(self.streets)
+        self.intersectionRenderer.updateInstances(self.intersections)
+
+        if self.numBuildings >= self.cityGenerator.numPossibleBuildings:
+            self.buildingLimitReached.emit()
+            if self.buildingLimitReached.isConnected:
+                self.buildingLimitReached.clear()
 
     def importFilesAndConstruct(self):
         self.importer.openAndImportFiles()
@@ -170,4 +220,5 @@ class City:
 
     def render(self):
         self.streetRenderer.render()
+        self.intersectionRenderer.render()
         self.buildingRenderer.render()

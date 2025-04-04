@@ -252,6 +252,13 @@ class NewServiceInputDialog(qtw.QDialog):
                 self.serviceTypeInput.currentText(),
                 self.serviceAffectedBuildingInput.text())
 
+class BuldingLimitReachedPopup(qtw.QMessageBox):
+    def __init__(self):
+        super().__init__()
+        self.setIcon(qtw.QMessageBox.Icon.Warning)
+        self.setWindowTitle("Maximum épületek száma el lett érve")
+        self.setText("Maximum épületek száma el lett érve. Újabb épületek nem fognak vizuálisan megjelenni, de ezen kívül ugyan úgy fognak viselkedni.")
+
 class MainWindow(qtw.QMainWindow):
     def __init__(self, qtApp):
         super().__init__()
@@ -316,6 +323,7 @@ class MainWindow(qtw.QMainWindow):
         mainLayout.addWidget(bottomPanel)
 
         self.statisticsPopup = StatisticsPopup()
+        self.buldingLimitReachedPopup = BuldingLimitReachedPopup()
 
         self.setCentralWidget(mainContainer)
 
@@ -431,3 +439,6 @@ class UI:
             except:
                 return
             city.services.append(Service(newID, description, serviceType, [affectedBuilding]))
+
+    def openBuildingLimitReachedPopup(self):
+        self.mainWindow.buldingLimitReachedPopup.exec()

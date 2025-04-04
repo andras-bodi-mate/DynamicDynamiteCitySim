@@ -40,6 +40,9 @@ class App:
         self.window.ui.mainWindow.newServiceDialogButton.clicked.connect(
             lambda: self.window.ui.addNewService(self.scene.city)
         )
+        self.scene.city.buildingLimitReached.connect(
+            lambda: self.window.ui.openBuildingLimitReachedPopup()
+        )
 
     def close(self):
         self.isRunning = False
