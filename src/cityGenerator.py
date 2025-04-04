@@ -32,7 +32,7 @@ class Lot:
             x = self.bottomLeft.x + self.minDistance
             while x <= self.topRight.x - self.minDistance:
                 self.columns.append(x)
-                streets.append(Street(glm.ivec2(x, self.bottomLeft.y), glm.ivec2(x, self.topRight.y)))
+                streets.append(StreetVisuals(glm.ivec2(x, self.bottomLeft.y), glm.ivec2(x, self.topRight.y)))
 
                 x += randint(self.minDistance * s, self.maxDistance * s)
         
@@ -40,7 +40,7 @@ class Lot:
             y = self.bottomLeft.y + self.minDistance
             while y <= self.topRight.y - self.minDistance:
                 self.rows.append(y)
-                streets.append(Street(glm.ivec2(self.bottomLeft.x, y), glm.ivec2(self.topRight.x, y)))
+                streets.append(StreetVisuals(glm.ivec2(self.bottomLeft.x, y), glm.ivec2(self.topRight.x, y)))
 
                 y += randint(self.minDistance * s, self.maxDistance * s)
 
@@ -62,7 +62,7 @@ class Lot:
                 newLot.generate(streets)
                 self.subLots.append(newLot)
 
-class Street:
+class StreetVisuals:
     def __init__(self, startPos: glm.ivec2, endPos: glm.ivec2):
         self.startPos = startPos
         self.endPos = endPos
@@ -70,17 +70,17 @@ class Street:
         self.direction = (self.endPos - self.startPos) // self.length
 
 @dataclass
-class StreetSegment:
+class StreetSegmentVisuals:
     pos: glm.ivec2
     isHorizontal: bool
 
 @dataclass
-class Building:
+class BuildingVisuals:
     pos: glm.ivec2
     direction: glm.ivec2
 
 @dataclass
-class Intersection:
+class IntersectionVisuals:
     pos: glm.ivec2
     type: IntersectionType
     direction: glm.ivec2 = glm.ivec2(0, 0)
@@ -94,16 +94,17 @@ class CellType(Enum):
 
 class CityGenerator:
     def __init__(self, streetMinDistance = 5, streetMaxDistance = 7):
-        self.numBuildings = 0
+        self.numBuiltBuildings = 0
         self.streetMinDistance = streetMinDistance
         self.streetMaxDistance = streetMaxDistance
 
         self.mainLot = Lot(glm.ivec2(-25, -25), glm.ivec2(25, 25), 1, self.streetMinDistance, self.streetMaxDistance)
-        self.buildings: list[Building] = []
-        self.streets: list[Street] = []
-        self.streetSegments: list[StreetSegment] = []
-        self.intersections: list[Intersection] = []
+        self.possibleBuildings: list[BuildingVisuals] = []
+        self.streets: list[StreetVisuals] = []
+        self.streetSegments: list[StreetSegmentVisuals] = []
+        self.intersections: list[IntersectionVisuals] = []
 
+        self.numPossibleBuildings = 0
         self.prevMaxDist = 0.0
 
     def generateStreets(self):
@@ -125,33 +126,33 @@ class CityGenerator:
                     if cells[p] == CellType.Street:
                         cells[p] = CellType.Intersection
         
-            for pos, type in cells.items():
-                if type == CellType.Street:
-                    self.streetSegments.append(StreetSegment(pos, streetDirections[pos].y == 0))
+        for pos, type in cells.items():
+            if type == CellType.Street:
+                self.streetSegments.append(StreetSegmentVisuals(pos, streetDirections[pos].y == 0))
 
-                elif type == CellType.Intersection:
-                    a = glm.ivec2(pos.x, pos.y + 1)
-                    b = glm.ivec2(pos.x - 1, pos.y)
-                    c = glm.ivec2(pos.x, pos.y - 1)
-                    d = glm.ivec2(pos.x + 1, pos.y)
+            elif type == CellType.Intersection:
+                a = glm.ivec2(pos.x, pos.y + 1)
+                b = glm.ivec2(pos.x - 1, pos.y)
+                c = glm.ivec2(pos.x, pos.y - 1)
+                d = glm.ivec2(pos.x + 1, pos.y)
 
-                    e = [p in cells and (cells[p] == CellType.Street or cells[p] == CellType.Intersection) for p in (a, b, c, d)]
-                    n = sum(e)
+                e = [p in cells and (cells[p] == CellType.Street or cells[p] == CellType.Intersection) for p in (a, b, c, d)]
+                n = sum(e)
 
-                    direction = glm.ivec2(0, 0)
-                    if n == 3:
-                        if e[0] == False:
-                            direction = glm.ivec2(0, -1)
-                        elif e[1] == False:
-                            direction = glm.ivec2(1, 0)
-                        elif e[2] == False:
-                            direction = glm.ivec2(0, 1)
-                        elif e[3] == False:
-                            direction = glm.ivec2(-1, 0)
+                direction = glm.ivec2(0, 0)
+                if n == 3:
+                    if e[0] == False:
+                        direction = glm.ivec2(0, -1)
+                    elif e[1] == False:
+                        direction = glm.ivec2(1, 0)
+                    elif e[2] == False:
+                        direction = glm.ivec2(0, 1)
+                    elif e[3] == False:
+                        direction = glm.ivec2(-1, 0)
 
-                    intersectionType = IntersectionType.Three if n == 3 else IntersectionType.Four
+                intersectionType = IntersectionType.Three if n == 3 else IntersectionType.Four
 
-                    self.intersections.append(Intersection(pos, intersectionType, direction))
+                self.intersections.append(IntersectionVisuals(pos, intersectionType, direction))
 
         for street in self.streets:
             for t in range(0, street.length):
@@ -168,31 +169,35 @@ class CityGenerator:
                 p1, p2 = middle + perpendicular, middle - perpendicular
 
                 if shape & 1 and not (p1 in cells and cells[p1] != CellType.Empty):
-                    self.buildings.append(Building(p1, -perpendicular))
+                    self.possibleBuildings.append(BuildingVisuals(p1, -perpendicular))
                     cells[p1] = CellType.Building
 
                 if shape & 2 and not (p2 in cells and cells[p2] != CellType.Empty):
-                    self.buildings.append(Building(middle - perpendicular, perpendicular))
+                    self.possibleBuildings.append(BuildingVisuals(middle - perpendicular, perpendicular))
                     cells[p2] = CellType.Building
 
-        self.buildings.sort(key = lambda building: self.distanceSquared(building.pos))
+        self.possibleBuildings.sort(key = lambda building: self.distanceSquared(building.pos))
         self.streetSegments.sort(key = lambda street: self.distanceSquared(street.pos))
         self.intersections.sort(key = lambda intersection: self.distanceSquared(intersection.pos))
 
     def generate(self):
         self.generateStreets()
         self.generateBuildings()
+        self.numPossibleBuildings = len(self.possibleBuildings)
 
     def constructNewBuilding(self):
-        newBuilding = self.buildings[self.numBuildings]
+        if self.numBuiltBuildings >= len(self.possibleBuildings):
+            return None
+        
+        newBuilding = self.possibleBuildings[self.numBuiltBuildings]
 
         minDistance = self.prevMaxDist
         maxDistance = (self.distanceSquared(newBuilding.pos)**0.5 + 2)**2
-        self.numBuildings += 1
+        self.numBuiltBuildings += 1
         self.prevMaxDist = maxDistance
 
-        newStreetSegments: list[StreetSegment] = []
-        newIntersections: list[Intersection] = []
+        newStreetSegments: list[StreetSegmentVisuals] = []
+        newIntersections: list[IntersectionVisuals] = []
 
         for streetSegment in self.streetSegments:
             dist = self.distanceSquared(streetSegment.pos)

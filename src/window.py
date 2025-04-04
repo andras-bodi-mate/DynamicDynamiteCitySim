@@ -20,7 +20,7 @@ class Window:
         pixelRatio = primaryScreen.devicePixelRatio()
         self.size = glm.ivec2(screenSize.width() * pixelRatio, screenSize.height() * pixelRatio)
 
-        self.loadingScreen = LoadingScreen(4, self.ui.mainWindow.viewport)
+        self.loadingScreen = LoadingScreen(5, self.ui.mainWindow.viewport)
         onShaderLoad.connect(self.loadingScreen.increment)
     
     def close(self):

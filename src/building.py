@@ -34,6 +34,7 @@ class Building:
 
     position: glm.vec3
     rotation: glm.vec3
+    isVisible: bool = field(default = True)
 
     def updateCondition(self, newCondition):
         self.data.condition = min(max(0.0, newCondition), 100.0)
@@ -59,8 +60,8 @@ class BuildingRenderer:
         if len(buildings) == 0:
             return
 
-        instancePositions = [building.position for building in buildings]
-        instanceRotations = [building.rotation for building in buildings]
+        instancePositions = [building.position for building in buildings if building.isVisible]
+        instanceRotations = [building.rotation for building in buildings if building.isVisible]
         self.mesh.updateInstances(instancePositions, instanceRotations)
 
     def render(self):
